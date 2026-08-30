@@ -1,0 +1,105 @@
+# =============================================================================
+# EdgeFusion Smart NVR - 边侧网关(IMX6ULL)配置样例
+# -----------------------------------------------------------------------------
+# 用法: 复制为 gateway.conf 并按现场修改,启动:
+#   ./gateway -path /mnt/extsd/gateway/config/gateway.conf
+# 不带 -path 时默认读取 /mnt/extsd/gateway/config/gateway.conf (见 src/main.c)
+#
+# 语法(简单 key=value 解析器,见 src/conf.c):
+#   - 每行 "key = value"; 行内 "#" 之后视为注释,值本身不能包含 "#";
+#   - 布尔量为整数: 1=启用 0=禁用; GPIO 填 -1 表示禁用该路;
+#   - 未知 key 被静默忽略,但 Web 保存配置时按原样保留;
+#   - 注释标 (热) 的项: Web 端保存后立即生效; 其余需重启进程。
+#   - 敏感字段(token/密码)请勿填真实值后提交代码仓库。
+# =============================================================================
+
+# ---------- RTSP 输入(端侧视频源) ----------
+# V821 端侧推流地址。核心必填: 录像/预览/云AI 的共同来源,为空则拉流永远重连
+rtsp_url = rtsp://192.168.1.100:8554/ch0
+# 子码流地址。预留: 当前版本拉流固定用 rtsp_url,此项暂未被业务消费
+rtsp_sub_url =
+# RTSP 交互超时,单位微秒(默认 5s)
+rtsp_timeout_us = 5000000
+# 底层传输: tcp / udp(默认 tcp,内置网络建议 tcp 不丢包)
+rtsp_transport = tcp
+# 断线后重连等待,单位秒(默认 3)
+rtsp_reconnect_s = 3
+
+# ---------- RTSP 本地转发(供播放器拉流预览) ----------
+# 1=网关自建 RTSP 服务转发源流(默认开)
+rtsp_server_enable = 1
+# 转发服务端口(默认 8554,与端侧推流端口不冲突:不同主机)
+rtsp_server_port = 8554
+
+# ---------- 录像存储 ----------
+# 录像段保存目录。核心必填: 为空则 open_segment 反复失败,录像停摆
+storage_dir = /mnt/extsd/gateway/recordings
+# 单段时长,单位秒(默认 600; 实际切段落在到期后的首个关键帧)
+segment_seconds = 600        # (热)
+# 磁盘最小剩余空间,单位 MB;低于此值触发删最旧段(默认 500)
+storage_min_free_mb = 500
+# 录像段文件名前缀(默认 rec; 文件名=前缀_时间段时间戳.mp4,长度<=31)
+segment_prefix = rec
+
+# ---------- 事件库(SQLite) ----------
+# 事件数据库路径。建议填写: 缺失时事件入库降级为告警,不致命
+sqlite_db_path = /mnt/extsd/gateway/events.db
+
+# ---------- 云端 AI(OpenAI 兼容多模态端点) ----------
+# 总开关(默认 1)。注意: token 为空时自动进入纯本地模式,不上云
+ai_enable = 1
+# 抽帧上云帧率 fps(默认 1; 0=不限流)
+ai_fps = 1                  # (热)
+# 上云 JPEG 缩放宽度,单位像素(默认 640; 高度按源比例自动计算)
+ai_frame_width = 640
+# JPEG 质量 1-100(默认 70; 越大越清晰,带宽占用越高)
+ai_jpeg_quality = 70
+# HTTP 调用超时,单位秒(默认 30)
+ai_http_timeout_s = 30
+# 事件队列上限(默认 2)。预留: 当前业务代码未消费此字段
+ai_max_queue = 2
+# API 端点 base_url(OpenAI 兼容)。使用云 AI 时必填
+anthropic_base_url = https://api.example.com/v1
+# API 密钥。敏感: 此处必须留空或占位符,真实值只写在板端 gateway.conf
+anthropic_auth_token =
+# 模型名(默认 deepseek-v4-pro[1m])            # (热)
+anthropic_model = deepseek-v4-pro[1m]
+# 提示词。单行且不能包含 "#"(默认空)
+ai_prompt = 你是安防监控画面分析助手,识别画面中的人员和异常情况,按约定JSON格式输出结果。   # (热)
+
+# ---------- 报警 ----------
+# LED 蜂鸣器 GPIO 编号;-1=禁用该路(默认 -1)
+alarm_gpio_led = -1          # (热)
+alarm_gpio_buzzer = -1       # (热)
+# 触发报警的事件类型,逗号分隔(默认 person_detected,danger_alert)
+alarm_trigger_types = person_detected,danger_alert   # (热)
+# 触发置信度阈值 0.0-1.0(默认 0.6)
+alarm_min_confidence = 0.6   # (热)
+# 报警持续时间,单位秒(默认 3)
+alarm_active_s = 3           # (热)
+
+# ---------- Web 管理界面 ----------
+# 监听地址(默认 0.0.0.0=所有网卡; 仅内网使用可改为具体内网 IP)
+web_bind = 0.0.0.0
+# 监听端口(默认 8080)
+web_port = 8080
+# MJPEG 预览帧率 fps(默认 5; 同时作为 frame_grabber 产出节流)   # (热)
+web_mjpeg_fps = 5
+# 静态前端文件目录(默认板端 SD 卡路径)
+web_root = /mnt/extsd/gateway/web
+
+# ---------- MQTT 上报(整体预留) ----------
+# 以下字段当前仅被解析/保存/可经 Web 修改,业务代码尚未消费
+mqtt_enable = 0
+mqtt_host =
+mqtt_port = 1883
+mqtt_client_id = edgefusion_gateway_imx6ull
+mqtt_topic = edgefusion/events
+mqtt_user =
+mqtt_pass =
+
+# ---------- 日志 ----------
+# 级别: debug / info / warn / error(默认 info)   # (热)
+log_level = info
+# 日志文件路径(留空则不写文件)
+log_file = /mnt/extsd/gateway/logs/gateway.log

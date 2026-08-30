@@ -1,0 +1,12 @@
+build/
+*.o
+*.d
+
+# 含凭证，勿提交
+config/gateway.conf
+
+# IDE
+.vscode/
+
+# 工具链（随工程自包含，体积大，不纳入 git；用 zip/tar 分发整个文件夹）
+toolchain/

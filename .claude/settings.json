@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:/Users/Windows/Desktop/EdgeFusion_Smart_NVR\" && find . -type f -not -path '*/\\\\.git/*' -not -path '*/node_modules/*' -not -path '*/__pycache__/*' -not -path '*/build/*' -not -path '*/dist/*' | head -200)",
+      "Read(//c/Users/Windows/Desktop/EdgeFusion_Smart_NVR/\\\\*/.git/**)",
+      "Bash(cd \"c:/Users/Windows/Desktop/EdgeFusion_Smart_NVR\" && echo \"=== Top-level structure ===\" && ls -la && echo \"\" && echo \"=== Directory tree \\(2 levels\\) ===\" && find . -maxdepth 2 -type d -not -path '*/\\\\.git/*' | sort)"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+# 原始 ZIP 冗余
+EdgeFusion_Smart_NVR-main.zip
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# ZCode 会话临时目录
+.zcode/
+inner_git_backup_0830/
