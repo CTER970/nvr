@@ -13,7 +13,7 @@
 | 03_recorder.md | 录像状态机、fMP4、时基、统计 | 9卡（含 1.9 收口 V2 段首坏IDR / T5 600s矛盾，cleanup 占位补录） |
 | 04_frame_grabber.md | 抽帧、JPEG、节流 | 9卡（1.7 三卡收口 8 张+1.9 V1 访问集法） |
 | 05_协议.md | RTSP/RTP/H.264/SDP/FU-A | 10卡（B1–B10 概念层收官 08-25） |
-| 06_云AI与事件.md | cloud_ai/event_bus/alarm | 待 Phase 2 |
+| 06_云AI与事件.md | cloud_ai/event_bus/alarm | 3卡（C1 回调/发布-订阅收口 09-01） |
 | 07_Web与配置.md | web/conf/热更新 | 待 Phase 3 |
 | 08_工程证据.md | 编译/板端运行/性能数据 | 待 Phase 6.5 |
 
