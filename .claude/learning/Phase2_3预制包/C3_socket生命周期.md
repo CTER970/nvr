@@ -1,9 +1,10 @@
-# C3 · socket 与 TCP 服务器生命周期（概念块，45min）
+# C3 · socket 与 TCP 服务器生命周期（并入 3.4 开场，15–20min）
 
-> ID 3.0A · 认证 L2（不推进任务 ID）· 落卡方向：07_Web配置.md
-> 状态：待开（Phase 2 收口后）
+> **2026-09-02：取消独立 45min 开块。** 本文件是 `P3-3.4` 的开场材料，不推进 3.0A，不走 knowledge-tutor。
+> 落卡随 3.4 写入 07_Web配置.md。
+> 开场用法：阅读清单 + 两种 fd 三件套 + shutdown 唤醒一句；细节（异步启动/detach/bind 失败）留 3.4 正文。
 
-## 0. 开块审查
+## 0. 开块审查（由 3.4 执行，不单独开会话）
 
 - grep 核对：`grep -n "socket\|bind\|listen\|accept\|shutdown" web.c`（964-1028 区域）。
 - 前置迁移：Phase 1 已有 fd 概念（V4L2 open/ioctl/mmap）；本块把 fd 推广到网络对象。

@@ -1,9 +1,10 @@
-# C4 · HTTP 请求/响应模型（概念块，45min）
+# C4 · HTTP 请求/响应模型（并入 3.1 开场，15–20min）
 
-> ID 3.0B · 认证 L2（不推进任务 ID）· 落卡方向：07_Web配置.md
-> 状态：待开（C3 后）
+> **2026-09-02：取消独立 45min 开块。** 本文件是 `P3-3.1` 的开场材料，不推进 3.0B，不走 knowledge-tutor。
+> 落卡随 3.1 写入 07_Web配置.md。
+> 开场用法：手写最小 GET + 200（四段式）→ 立刻对 `handle_client_inner` 请求行/空行/Content-Length。multipart/Range/状态码清单留 3.2/3.3。
 
-## 0. 开块审查
+## 0. 开块审查（由 3.1 执行，不单独开会话）
 
 - grep 核对：`grep -n "HTTP/1.1\|Content-Length" web.c | head`（send_http 104-125、handle_client_inner 862-951）。
 - 前置：C3 已建「字节在连接 fd 上流动」；本块讲字节长什么样。2.2 已见过 curl=HTTP 客户端侧，可反向印证。
