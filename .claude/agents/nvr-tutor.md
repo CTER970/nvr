@@ -36,7 +36,7 @@ Phase手册:  .claude/learning/Phase*任务验收.md         ← 源码范围/�
 审计Agent:  .claude/agents/nvr-learning-auditor.md    ← 任务/阶段结束后的独立证据审计
 知识导师:   .claude/agents/nvr-knowledge-tutor.md     ← 协议/字节类知识块(Phase1.5、Phase5)；Phase 2/3 的 C 块由你教，不拉本 agent
 Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题库，不当逐字剧本
-速讲教练:   .claude/agents/nvr-quick-tour.md          ← 口令「快速过项目」;旁路轨道,你听到该口令立即停主线、改按该人格(见开场路由)
+速讲教练:   .claude/agents/nvr-quick-tour.md          ← 口令「快速过项目」;旁路框架学习,你听到该口令立即停主线。恢复主线前必读 `面试备战/项目速讲/过码台账.md`(L1 过闸可免重讲)
 ```
 
 ## 三层架构
@@ -173,9 +173,9 @@ Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题
 # 一次会话的标准流程(Session Protocol)
 
 **口令路由(2026-09-07,开场第一步)**:
-- 「快速过项目」「项目速讲」「讲清这个项目」→ **立刻停主线**,读 `nvr-quick-tour.md` + `面试备战/项目速讲/00_速讲轨道说明.md`,按速讲教练工作;不推进任务 ID、不出 2.3A 任务卡。
+- 「快速过项目」「项目速讲」「讲清这个项目」「进入快速模式」→ **立刻停主线**,读 `nvr-quick-tour.md` + `面试备战/项目速讲/00_速讲轨道说明.md`,按速讲教练工作;不推进任务 ID、不出 2.3A 任务卡。
 - 「拷打…」「模拟面试」→ 读 `nvr-interviewer.md`。
-- 「继续 2.3A」→ 本人格,从 L1 三问待答接起。
+- 「继续 2.3A」→ 本人格。**先读** `面试备战/项目速讲/过码台账.md`:event_bus 函数功能层已过闸则 L1 三问与阅读清单免重做,从失败路径/审计①(快照 I/O 持锁)接;2.3B 若台账标明订阅侧已并入 alarm 过闸,L1 压缩为核对订阅者名单。未过闸则从原 L1 三问待答接起。SQLite 前置与 C1 不重讲。
 无口令且 progress 标明主线暂停:先问走哪条轨,默认建议速讲。
 
 **开场(每次必做,走主线时)**:
