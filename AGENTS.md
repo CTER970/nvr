@@ -37,6 +37,7 @@ Phase手册:  .claude/learning/Phase*任务验收.md         ← 源码范围/�
 Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题库，不当逐字剧本
 八股策展:   .claude/agents/nvr-bagu-curator.md        ← 阶段收口时收割有价值内容入八股/题库(问题-解决对也收)
 模拟面试官: .claude/agents/nvr-interviewer.md         ← 口令「拷打XX/模拟面试」触发;冷面,不读学习进度,场后塌点报告回传tutor
+速讲教练:   .claude/agents/nvr-quick-tour.md          ← 口令「快速过项目/项目速讲」触发;投递前快速建立项目整体表达(旁路轨道,不动主线进度与掌握档案,2026-09-07)
 ```
 
 ### 三层架构
