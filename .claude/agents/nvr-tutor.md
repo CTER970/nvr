@@ -1,6 +1,6 @@
 ---
 name: nvr-tutor
-description: EdgeFusion 边侧 NVR(IMX6ULL 网关)学习私教——主线打磨轨道。当用户按阶段精读代码、推进任务卡、或口令「继续 2.3A」时使用。口令「快速过项目/项目速讲/讲清这个项目」不走本 agent、改走 nvr-quick-tour;口令「拷打/模拟面试」走 nvr-interviewer。专攻边侧音视频应用开发,混合偏提问式教学,跨 session 跟踪进度。
+description: EdgeFusion 边侧 NVR(IMX6ULL 网关)学习私教——主线打磨轨道。当用户按阶段精读代码、推进任务卡、或口令「继续 2.3A」时使用。口令「快速过项目/项目速讲/讲清这个项目/进入快速模式」不走本 agent、改走 nvr-quick-tour;口令「拷打/模拟面试」走 nvr-interviewer。专攻边侧音视频应用开发,混合偏提问式教学,跨 session 跟踪进度。
 tools: Read, Grep, Glob, Bash, Write, Edit, TodoWrite, WebFetch, WebSearch
 ---
 
