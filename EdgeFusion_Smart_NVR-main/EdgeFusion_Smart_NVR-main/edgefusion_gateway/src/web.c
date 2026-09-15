@@ -38,7 +38,7 @@ static char         g_storage_dir[256];
 static char         g_web_root[256];
 static gateway_conf_t g_cfg;
 
-/* ─── URL decode ─── */
+/* ─── URL 解码 ─── */
 /* 原地解码 URL 中的加号和百分号转义。 */
 static void url_decode(char *s)
 {
@@ -58,7 +58,7 @@ static void url_decode(char *s)
     *p = 0;
 }
 
-/* ─── MIME type from file extension ─── */
+/* ─── 按扩展名取 MIME 类型 ─── */
 /* 根据文件扩展名返回 HTTP Content-Type。 */
 static const char *mime_type(const char *path)
 {
@@ -78,7 +78,7 @@ static const char *mime_type(const char *path)
     return "application/octet-stream";
 }
 
-/* ─── JSON string escape ─── */
+/* ─── JSON 字符串转义 ─── */
 /* 将普通字符串转义为可嵌入 JSON 的文本。 */
 static int json_escape(char *dst, size_t cap, const char *s)
 {
@@ -99,7 +99,7 @@ static int json_escape(char *dst, size_t cap, const char *s)
     return (int)o;
 }
 
-/* ─── Send minimal HTTP response ─── */
+/* ─── 发送最小 HTTP 响应 ─── */
 /* 发送带状态码、类型和可选正文的最小 HTTP 响应。 */
 static void send_http(int cfd, int code, const char *ctype, const char *body, int body_len)
 {
@@ -130,14 +130,14 @@ static void send_json(int cfd, int code, const char *body, int len)
     send_http(cfd, code, "application/json; charset=utf-8", body, len);
 }
 
-/* ─── Static file serving ─── */
+/* ─── 静态文件服务 ─── */
 /* 从 Web 根目录读取并发送静态文件。 */
 static void serve_static(int cfd, const char *url_path)
 {
-    /* Default to index.html for "/" */
+    /* 根路径 "/" 默认返回 index.html */
     if (!strcmp(url_path, "/")) url_path = "/index.html";
 
-    /* Path traversal guard */
+    /* 防目录穿越攻击 */
     if (strstr(url_path, "..")) {
         const char *e = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n";
         send(cfd, e, strlen(e), 0);
@@ -147,7 +147,7 @@ static void serve_static(int cfd, const char *url_path)
     char fpath[512];
     snprintf(fpath, sizeof(fpath), "%s%s", g_web_root, url_path);
 
-    /* If directory, try index.html */
+    /* 若是目录则改走其下 index.html */
     struct stat st;
     if (stat(fpath, &st) == 0 && S_ISDIR(st.st_mode)) {
         size_t l = strlen(fpath);
@@ -180,7 +180,7 @@ static void serve_static(int cfd, const char *url_path)
     close(fd);
 }
 
-/* ─── MJPEG stream ─── */
+/* ─── MJPEG 预览流 ─── */
 /* 持续取得最新 JPEG，并以 multipart MJPEG 流发送。 */
 static void serve_mjpeg(int cfd)
 {
@@ -214,7 +214,7 @@ static void serve_mjpeg(int cfd)
     }
 }
 
-/* ─── Single JPEG snapshot ─── */
+/* ─── 单张 JPEG 抓图 ─── */
 /* 返回 frame_grabber 中当前最新的一张 JPEG。 */
 static void serve_snapshot_jpeg(int cfd)
 {
@@ -236,7 +236,7 @@ static void serve_snapshot_jpeg(int cfd)
     free(jpeg);
 }
 
-/* ─── /api/status ─── */
+/* ─── /api/status：状态汇总 ─── */
 /* 汇总网关运行状态并返回 JSON。 */
 static void serve_status(int cfd)
 {
@@ -246,7 +246,7 @@ static void serve_status(int cfd)
     stream_status_t ss;
     int have_stream = (stream_receiver_get_status(&ss) == 0);
 
-    /* stream_receiver owns the recorder; status includes recording/cur_segment/bitrate */
+    /* recorder 由 stream_receiver 持有；其状态已含 recording/cur_segment/bitrate */
 
     int rtsp_clients = rtsp_server_client_count();
 
@@ -257,7 +257,7 @@ static void serve_status(int cfd)
 
     off += snprintf(json + off, sizeof(json) - off, "{");
 
-    /* stream */
+    /* 拉流状态 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"stream\":{");
     if (have_stream) {
@@ -274,11 +274,11 @@ static void serve_status(int cfd)
     }
     off += snprintf(json + off, sizeof(json) - off, "}");
 
-    /* rtsp_server */
+    /* RTSP 预览转发 */
     off += snprintf(json + off, sizeof(json) - off,
         ",\"rtsp_server\":{\"clients\":%d}", rtsp_clients);
 
-    /* cloud_ai */
+    /* 云端 AI */
     off += snprintf(json + off, sizeof(json) - off,
         ",\"cloud_ai\":{");
     if (have_ai) {
@@ -292,7 +292,7 @@ static void serve_status(int cfd)
     }
     off += snprintf(json + off, sizeof(json) - off, "}");
 
-    /* events total */
+    /* 事件总数 */
     off += snprintf(json + off, sizeof(json) - off,
         ",\"events_total\":%ld", total_events);
 
@@ -300,7 +300,7 @@ static void serve_status(int cfd)
     send_json(cfd, 200, json, off);
 }
 
-/* ─── /api/recordings ─── */
+/* ─── /api/recordings：录像段列表 ─── */
 /* 字符串降序比较（用于录像按名字=时间戳降序，最新在前） */
 static int strcmp_desc(const char *a, const char *b)
 {
@@ -375,7 +375,7 @@ static void serve_recordings(int cfd)
     free(list);
 }
 
-/* ─── /rec/<name> mp4 file serve with Range support ─── */
+/* ─── /rec/<name>：MP4 录像（支持 Range） ─── */
 /* 按可选 HTTP Range 读取并发送指定录像文件。 */
 static void serve_file(int cfd, const char *name, const char *range_hdr)
 {
@@ -445,7 +445,7 @@ static void serve_file(int cfd, const char *name, const char *range_hdr)
     close(fd);
 }
 
-/* ─── /api/events ─── */
+/* ─── /api/events：事件列表 ─── */
 /* 解析筛选和分页参数，并返回事件列表。 */
 static void serve_events(int cfd, const char *query)
 {
@@ -508,7 +508,7 @@ static void serve_events(int cfd, const char *query)
     free(json);
 }
 
-/* ─── /api/event/<id> ─── */
+/* ─── /api/event/<id>：单条事件 ─── */
 /* 按 ID 查询并返回单条事件详情。 */
 static void serve_event_detail(int cfd, long id)
 {
@@ -530,7 +530,7 @@ static void serve_event_detail(int cfd, long id)
     send_json(cfd, 200, json, off);
 }
 
-/* ─── /snap/evt_<id>.jpg ─── */
+/* ─── /snap/evt_<id>.jpg：事件抓拍 ─── */
 /* 校验事件快照名称后读取并发送对应 JPEG。 */
 static void serve_snapshot(int cfd, const char *name)
 {
@@ -568,7 +568,7 @@ static void serve_snapshot(int cfd, const char *name)
     close(fd);
 }
 
-/* ─── /api/config GET (mask sensitive) ─── */
+/* ─── /api/config GET：读取配置（敏感字段掩码） ─── */
 /* 返回当前配置，并对敏感凭据做掩码处理。 */
 static void serve_config_get(int cfd)
 {
@@ -578,25 +578,25 @@ static void serve_config_get(int cfd)
 
     off += snprintf(json + off, sizeof(json) - off, "{");
 
-    /* RTSP */
+    /* RTSP 拉流 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"rtsp_url\":\"%s\",\"rtsp_sub_url\":\"%s\",\"rtsp_timeout_us\":%ld,"
         "\"rtsp_transport\":\"%s\",\"rtsp_reconnect_s\":%d,",
         c->rtsp_url, c->rtsp_sub_url, c->rtsp_timeout_us,
         c->rtsp_transport, c->rtsp_reconnect_s);
 
-    /* RTSP server */
+    /* RTSP 转发服务 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"rtsp_server_enable\":%s,\"rtsp_server_port\":%d,",
         c->rtsp_server_enable ? "true" : "false", c->rtsp_server_port);
 
-    /* recorder */
+    /* 录像 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"storage_dir\":\"%s\",\"segment_seconds\":%d,\"storage_min_free_mb\":%ld,"
         "\"segment_prefix\":\"%s\",",
         c->storage_dir, c->segment_seconds, c->storage_min_free_mb, c->segment_prefix);
 
-    /* AI (mask token) */
+    /* AI（token 掩码） */
     off += snprintf(json + off, sizeof(json) - off,
         "\"ai_enable\":%s,\"ai_fps\":%d,\"ai_frame_width\":%d,\"ai_jpeg_quality\":%d,"
         "\"ai_http_timeout_s\":%d,\"ai_max_queue\":%d,"
@@ -604,7 +604,7 @@ static void serve_config_get(int cfd)
         c->ai_enable ? "true" : "false",
         c->ai_fps, c->ai_frame_width, c->ai_jpeg_quality,
         c->ai_http_timeout_s, c->ai_max_queue, c->anthropic_base_url);
-    /* Token: show first 8 chars mask rest */
+    /* token 只显示前 8 字符，其余掩码 */
     if (c->anthropic_auth_token[0]) {
         char masked[64];
         int tl = (int)strlen(c->anthropic_auth_token);
@@ -623,7 +623,7 @@ static void serve_config_get(int cfd)
         "\"anthropic_model\":\"%s\",\"ai_prompt\":\"%s\",",
         c->anthropic_model, c->ai_prompt);
 
-    /* alarm */
+    /* 报警 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"alarm_gpio_led\":%d,\"alarm_gpio_buzzer\":%d,"
         "\"alarm_trigger_types\":\"%s\",\"alarm_min_confidence\":%.2f,"
@@ -631,12 +631,12 @@ static void serve_config_get(int cfd)
         c->alarm_gpio_led, c->alarm_gpio_buzzer,
         c->alarm_trigger_types, c->alarm_min_confidence, c->alarm_active_s);
 
-    /* web */
+    /* Web 服务 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"web_bind\":\"%s\",\"web_port\":%d,\"web_mjpeg_fps\":%d,\"web_root\":\"%s\",",
         c->web_bind, c->web_port, c->web_mjpeg_fps, c->web_root);
 
-    /* MQTT (mask pass) */
+    /* MQTT（pass 掩码） */
     off += snprintf(json + off, sizeof(json) - off,
         "\"mqtt_enable\":%s,\"mqtt_host\":\"%s\",\"mqtt_port\":%d,"
         "\"mqtt_client_id\":\"%s\",\"mqtt_topic\":\"%s\","
@@ -645,7 +645,7 @@ static void serve_config_get(int cfd)
         c->mqtt_host, c->mqtt_port, c->mqtt_client_id, c->mqtt_topic,
         c->mqtt_user, c->mqtt_pass[0] ? "****" : "");
 
-    /* log */
+    /* 日志 */
     off += snprintf(json + off, sizeof(json) - off,
         "\"log_level\":\"%s\",\"log_file\":\"%s\"",
         c->log_level, c->log_file);
@@ -654,7 +654,7 @@ static void serve_config_get(int cfd)
     send_json(cfd, 200, json, off);
 }
 
-/* ─── Simple JSON string value extractor (no library) ─── */
+/* ─── 简易 JSON 字符串取值（无第三方库） ─── */
 /* 从简单 JSON 对象中提取指定字符串字段。 */
 static int json_get_str(const char *json, const char *key, char *out, int outcap)
 {
@@ -727,7 +727,7 @@ static int json_get_bool(const char *json, const char *key, int *out)
     return 0;
 }
 
-/* ─── /api/config POST ─── */
+/* ─── /api/config POST：更新配置 ─── */
 /* 解析新配置，保存到文件并触发允许的热更新。 */
 static void serve_config_post(int cfd, const char *body, int body_len)
 {
@@ -737,14 +737,14 @@ static void serve_config_post(int cfd, const char *body, int body_len)
         return;
     }
 
-    /* Copy body to null-terminated buffer */
+    /* 复制请求体并补 NUL 结尾 */
     char *js = malloc(body_len + 1);
     memcpy(js, body, body_len);
     js[body_len] = 0;
 
-    gateway_conf_t new_cfg = g_cfg; /* start from current */
+    gateway_conf_t new_cfg = g_cfg; /* 以当前配置为底 */
 
-    /* Parse and overlay each field if present in JSON */
+    /* 逐字段解析：JSON 中出现的才覆盖 */
     char buf[1024];
     int iv; float fv;
 
@@ -771,7 +771,7 @@ static void serve_config_post(int cfd, const char *body, int body_len)
     if (json_get_str(js, "anthropic_base_url", buf, sizeof(buf)) == 0)
         strncpy(new_cfg.anthropic_base_url, buf, sizeof(new_cfg.anthropic_base_url) - 1);
     if (json_get_str(js, "anthropic_auth_token", buf, sizeof(buf)) == 0) {
-        /* Only overwrite if it's not "****" (masked placeholder) */
+        /* 掩码占位符 "****" 不回写，避免覆盖真实 token */
         if (strcmp(buf, "****"))
             strncpy(new_cfg.anthropic_auth_token, buf, sizeof(new_cfg.anthropic_auth_token) - 1);
     }
@@ -812,24 +812,24 @@ static void serve_config_post(int cfd, const char *body, int body_len)
 
     free(js);
 
-    /* Save to file */
+    /* 写回配置文件 */
     if (conf_save(&new_cfg) != 0) {
         const char *e = "{\"ok\":false,\"error\":\"save failed\"}";
         send_json(cfd, 500, e, (int)strlen(e));
         return;
     }
 
-    /* Apply hot-reloadable params to running modules */
+    /* 把可热更新的参数推送给运行中的模块 */
     conf_apply_hot(&new_cfg);
 
-    /* Update local copy (except web_bind/web_port which require restart) */
+    /* 更新本地副本（web_bind/web_port 改动须重启才生效） */
     g_cfg = new_cfg;
 
     const char *ok = "{\"ok\":true}";
     send_json(cfd, 200, ok, (int)strlen(ok));
 }
 
-/* ─── Request header getter ─── */
+/* ─── 请求头字段提取 ─── */
 /* 从 HTTP 请求头中提取指定字段值。 */
 static int req_hdr_get(const char *req, const char *name, char *out, int outcap)
 {
@@ -865,23 +865,23 @@ static void handle_client_inner(int cfd)
     ssize_t n = recv(cfd, req, sizeof(req) - 1, 0);
     if (n <= 0) return;
 
-    /* Parse request line */
+    /* 解析请求行 */
     char method[16], path[1024];
     path[0] = 0;
     sscanf(req, "%15s %1023s", method, path);
     url_decode(path);
 
-    /* Separate query string */
+    /* 拆出查询串 */
     char *query = strchr(path, '?');
     if (query) { *query = 0; query++; }
 
-    /* Find Content-Length for POST */
+    /* 取 POST 的 Content-Length */
     char cl_str[32] = {0};
     int content_length = 0;
     if (req_hdr_get(req, "Content-Length", cl_str, sizeof(cl_str))) {
         content_length = atoi(cl_str);
     }
-    /* Get request body (may be after headers in the same recv or need another) */
+    /* 取请求体（可能已随头部在同一批 recv 数据中，也可能要再读） */
     const char *body_start = strstr(req, "\r\n\r\n");
     char *post_body = NULL;
     int post_len = 0;
@@ -890,11 +890,11 @@ static void handle_client_inner(int cfd)
         int already = (int)((req + n) - body_start);
         if (content_length > 0) {
             post_body = malloc(content_length + 1);
-            /* Copy what we already have */
+            /* 先拷贝已随头部到达的部分 */
             int copy = already;
             if (copy > content_length) copy = content_length;
             if (copy > 0) memcpy(post_body, body_start, copy);
-            /* Read the rest if needed */
+            /* 不足部分继续 recv 补齐 */
             int remain = content_length - copy;
             int total = copy;
             while (remain > 0) {
@@ -908,7 +908,7 @@ static void handle_client_inner(int cfd)
         }
     }
 
-    /* Route */
+    /* 路由分发 */
     if (!strcmp(method, "GET")) {
         char range[128] = {0};
         req_hdr_get(req, "Range", range, sizeof(range));
@@ -932,7 +932,7 @@ static void handle_client_inner(int cfd)
         } else if (!strncmp(path, "/snap/", 6)) {
             serve_snapshot(cfd, path + 6);
         } else {
-            /* Try static file from web_root */
+            /* 兜底：按 web_root 静态文件处理 */
             serve_static(cfd, path);
         }
     } else if (!strcmp(method, "POST")) {
@@ -950,7 +950,7 @@ static void handle_client_inner(int cfd)
     free(post_body);
 }
 
-/* ─── Thread per client ─── */
+/* ─── 每客户端一线程 ─── */
 /* 在独立线程中处理一个客户端，完成后关闭连接。 */
 static void *client_thread(void *arg)
 {

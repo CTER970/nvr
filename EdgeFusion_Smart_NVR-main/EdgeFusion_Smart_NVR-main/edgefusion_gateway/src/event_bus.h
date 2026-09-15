@@ -8,10 +8,10 @@
 typedef struct {
     long   id;                  /* SQLite 自增 id（publish 后回填，-1=未入库） */
     int64_t created_at;         /* Unix 秒 */
-    char   event_type[32];      /* person_detected/danger_alert/none... */
+    char   event_type[32];      /* 取值如 person_detected / danger_alert / none */
     float  confidence;          /* 0-1 */
     char   description[256];
-    char   suggested_action[32];/* send_alert/record/ignore */
+    char   suggested_action[32];/* 取值 send_alert / record / ignore */
     char   jpeg_path[256];      /* 触发帧快照本地路径，空串则无快照 */
 } event_t;
 

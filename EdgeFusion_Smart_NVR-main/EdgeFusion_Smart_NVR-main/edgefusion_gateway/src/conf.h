@@ -4,11 +4,11 @@
 #include <stddef.h>
 
 typedef struct {
-    /* RTSP */
+    /* RTSP 拉流 */
     char  rtsp_url[256];
     char  rtsp_sub_url[256];
     long  rtsp_timeout_us;
-    char  rtsp_transport[8];      /* "tcp" / "udp" */
+    char  rtsp_transport[8];      /* 取值 "tcp" / "udp" */
     int   rtsp_reconnect_s;
 
     /* RTSP server（本地预览转发) */
@@ -21,7 +21,7 @@ typedef struct {
     long  storage_min_free_mb;
     char  segment_prefix[32];
 
-    /* SQLite */
+    /* SQLite 事件库 */
     char  sqlite_db_path[256];
 
     /* AI */
@@ -43,13 +43,13 @@ typedef struct {
     float alarm_min_confidence;
     int   alarm_active_s;
 
-    /* Web */
+    /* Web 服务 */
     char  web_bind[64];
     int   web_port;
     int   web_mjpeg_fps;
     char  web_root[256];        /* 静态前端文件目录 */
 
-    /* MQTT */
+    /* MQTT（预留，当前仅存取配置，未接入客户端） */
     int   mqtt_enable;
     char  mqtt_host[128];
     int   mqtt_port;
@@ -78,9 +78,9 @@ const char *conf_get_path(void);
 /* 把 cfg 写回配置文件（逐行替换值，保留注释与 key 顺序，原子 rename).成功返回 0 */
 int conf_save(const gateway_conf_t *cfg);
 
-/* Hot-reload: push live-updateable params to running modules
- * (log_level, ai_fps, ai_prompt, anthropic_model, alarm_*, web_mjpeg_fps, segment_seconds).
- * Params requiring restart are NOT handled here. */
+/* 热更新：把可在线生效的参数推送给运行中的模块
+ * （log_level、ai_fps、ai_prompt、anthropic_model、alarm_*、web_mjpeg_fps、segment_seconds）。
+ * 必须重启才生效的参数不在此处理。 */
 void conf_apply_hot(const gateway_conf_t *cfg);
 
 #endif

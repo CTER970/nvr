@@ -85,7 +85,7 @@ static char *build_request_body(const char *prompt, const char *model, const cha
     json_object_object_add(txt_blk, "text", json_object_new_string(prompt));
     json_object_array_add(content, txt_blk);
 
-    /* data URL: data:image/jpeg;base64,<...> */
+    /* 图片以 data URL 形式内嵌：data:image/jpeg;base64,<...> */
     char *data_url = malloc(strlen(b64_img) + 32);
     if (!data_url) { json_object_put(root); return NULL; }
     sprintf(data_url, "data:image/jpeg;base64,%s", b64_img);

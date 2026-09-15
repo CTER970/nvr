@@ -1,9 +1,9 @@
-/* EdgeFusion NVR — Single Page App (Professional UI) */
+/* EdgeFusion NVR — 单页应用（专业 UI） */
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
-/* ─── Toast ─── */
+/* ─── 轻提示 Toast ─── */
 function toast(msg, ok = true) {
   const t = $('#toast');
   t.innerHTML = (ok ? '✓' : '✕') + ' ' + msg;
@@ -12,7 +12,7 @@ function toast(msg, ok = true) {
   t._tid = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* ─── Formatting ─── */
+/* ─── 格式化工具 ─── */
 function fmtTs(ts) {
   const d = new Date(ts * 1000);
   return d.toLocaleString('zh-CN', { hour12: false });
@@ -28,7 +28,7 @@ function fmtSize(b) {
   if (b < 1073741824) return (b / 1048576).toFixed(1) + ' MB';
   return (b / 1073741824).toFixed(2) + ' GB';
 }
-/* parse timestamp out of recording filename rec_YYYYMMDD_HHMMSS_NN.mp4 */
+/* 从录像文件名 rec_YYYYMMDD_HHMMSS_NN.mp4 中解析时间戳 */
 function parseRecName(name) {
   const m = name.match(/rec_(\d{8})_(\d{6})_(\d+)\.mp4/i);
   if (!m) return null;
@@ -47,7 +47,7 @@ function escAttr(s) {
   return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/* ─── Navigation ─── */
+/* ─── 页面导航 ─── */
 const TITLES = {
   live: '实时预览', recordings: '录像回放',
   events: '事件告警', settings: '系统设置'
@@ -71,7 +71,7 @@ $$('.sidebar-nav a').forEach(a => {
 });
 window.addEventListener('hashchange', () => navigate(window.location.hash.slice(1) || 'live'));
 
-/* ─── Status Poll ─── */
+/* ─── 状态轮询 ─── */
 let lastStatus = null;
 let livePollTimer = null;
 
@@ -85,7 +85,7 @@ async function pollStatus() {
       try { onStatusUpdate(s); } catch(e) { console.error('status render error', e); }
     }
   } catch(e) {
-    /* network/parse error only — keep last good status, just flag disconnected */
+    /* 仅网络/解析出错——保留上次的正常状态，仅标记为断开 */
     updateSystemChrome(null);
   }
 }
@@ -97,7 +97,7 @@ function updateSystemChrome(s) {
   const aiOn = ai && ai.enabled;
   const aiRun = ai && ai.running;
 
-  /* sidebar foot */
+  /* 侧栏底部状态区 */
   setClass($('#sys-stream-dot'), online ? 'sys-dot on' : 'sys-dot off');
   $('#sys-stream-val').textContent = online
     ? `${s.stream.width}×${s.stream.height}@${s.stream.fps}`
@@ -107,7 +107,7 @@ function updateSystemChrome(s) {
   setClass($('#sys-ai-dot'), aiRun ? 'sys-dot ai' : (aiOn ? 'sys-dot on' : 'sys-dot'));
   $('#sys-ai-val').textContent = aiRun ? '运行中' : (aiOn ? '待命' : '禁用');
 
-  /* topbar pills */
+  /* 顶栏状态胶囊 */
   const ps = $('#pill-stream');
   ps.className = 'pill' + (online ? ' ok' : '');
   ps.querySelector('span:last-child').textContent = online ? 'LIVE' : 'NO SIGNAL';
@@ -116,7 +116,7 @@ function updateSystemChrome(s) {
 }
 function setClass(el, cls) { if (el) el.className = cls; }
 
-/* clock */
+/* 侧栏时钟 */
 function tickClock() {
   const d = new Date();
   const p = (n) => String(n).padStart(2, '0');
@@ -125,11 +125,11 @@ function tickClock() {
 setInterval(tickClock, 1000); tickClock();
 setInterval(pollStatus, 4000); pollStatus();
 
-/* hook for live page status-dependent refresh (set by renderLive) */
+/* 预览页状态刷新钩子（由 renderLive 赋值） */
 let onStatusUpdate = null;
 
 /* ─────────────────────────────────────────────────────────
-   Page: Live
+   页面：实时预览
    ───────────────────────────────────────────────────────── */
 function renderLive() {
   onStatusUpdate = refreshLiveStatus;
@@ -195,13 +195,13 @@ function imgOk() {
 }
 
 function refreshLiveStatus(s) {
-  if (!$('#live-tiles')) return; /* not on live page */
+  if (!$('#live-tiles')) return; /* 已不在预览页 */
   s = s || lastStatus || {};
   const st = s.stream || {};
   const rs = s.rtsp_server || {};
   const ai = s.cloud_ai || {};
 
-  /* OSD overlay */
+  /* OSD 叠加信息层 */
   const osd = $('#live-osd');
   if (osd) {
     const online = st.connected;
@@ -227,7 +227,7 @@ function refreshLiveStatus(s) {
     `;
   }
 
-  /* tiles */
+  /* 状态卡片组 */
   const tiles = [
     { label: '视频源', value: st.connected ? '在线' : '离线', cls: st.connected ? 'good' : 'bad', cardCls: st.connected ? 'ok' : 'bad', sub: st.connected ? 'RTSP 拉流' : '未连接' },
     { label: '分辨率', value: st.width ? `${st.width}×${st.height}` : '—', cls: '', cardCls: 'info', sub: st.fps ? st.fps + ' fps' : '' },
@@ -245,7 +245,7 @@ function refreshLiveStatus(s) {
       <div class="t-sub">${t.sub}</div>
     </div>`).join('');
 
-  /* uptime-ish */
+  /* 连接状态提示文字 */
   const up = $('#live-uptime');
   if (up) up.textContent = st.connected ? '拉流活跃中' : '等待视频源…';
 }
@@ -276,7 +276,7 @@ async function snapshotNow() {
 }
 
 /* ─────────────────────────────────────────────────────────
-   Page: Recordings
+   页面：录像回放
    ───────────────────────────────────────────────────────── */
 async function renderRecordings() {
   onStatusUpdate = null;
@@ -334,7 +334,7 @@ async function loadRecordings() {
       $('#rec-summary').textContent = '';
       return;
     }
-    /* sort newest first (by parsed time, fallback to name desc) */
+    /* 按解析出的时间降序（最新在前；解析失败则按文件名降序） */
     a.sort((x, y) => {
       const px = parseRecName(x.name), py = parseRecName(y.name);
       if (px && py) return py.label.localeCompare(px.label);
@@ -373,7 +373,7 @@ function playRecording(name) {
 }
 
 /* ─────────────────────────────────────────────────────────
-   Page: Events
+   页面：事件告警
    ───────────────────────────────────────────────────────── */
 let evPage = 0, evType = '', evLimit = 20;
 async function renderEvents() {
@@ -454,7 +454,7 @@ function prevBtn() {
 }
 
 /* ─────────────────────────────────────────────────────────
-   Page: Settings
+   页面：系统设置
    ───────────────────────────────────────────────────────── */
 async function renderSettings() {
   onStatusUpdate = null;
@@ -469,7 +469,7 @@ async function renderSettings() {
 }
 
 function toggleSel(name, on) {
-  /* sync hidden select for boolean fields from switch */
+  /* 把开关状态同步到隐藏的下拉框（布尔字段用） */
   const sel = document.querySelector(`select[name="${name}"]`);
   if (sel) sel.value = on ? 'true' : 'false';
 }
@@ -673,7 +673,7 @@ async function saveConfig(e) {
   }
 }
 
-/* ─── Init ─── */
+/* ─── 初始化 ─── */
 (function() {
   navigate(window.location.hash.slice(1) || 'live');
 })();

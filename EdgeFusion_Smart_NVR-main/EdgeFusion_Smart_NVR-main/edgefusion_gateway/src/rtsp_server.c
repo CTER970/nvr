@@ -27,7 +27,7 @@
 #define RTP_HDR_LEN 12
 #define MAX_CLIENTS 8
 
-/* ---------- Base64 ---------- */
+/* ---------- Base64 编码 ---------- */
 static const char B64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 /* 将 SPS/PPS 等二进制数据编码为 SDP 可用的 Base64 文本。 */
 static void b64_encode(const uint8_t *src, int len, char *out)
@@ -90,7 +90,7 @@ static void parse_nalus(const uint8_t *data, int len, nal_cb_t cb, void *user)
         }
         return;
     }
-    /* Annex B */
+    /* 以下按 Annex B 格式（起始码分隔）解析 */
     int pos = 0;
     /* 跳到首个起始码 */
     int sc = 0;
@@ -120,10 +120,10 @@ static void sdp_collect_cb(const uint8_t *nal, int len, void *user)
     (void)user;
     if (len < 1) return;
     int nal_type = nal[0] & 0x1f;
-    if (nal_type == 7 && !g_have_sps) {       /* SPS */
+    if (nal_type == 7 && !g_have_sps) {       /* SPS 参数集 */
         b64_encode(nal, len, g_sps_b64);
         g_have_sps = 1;
-    } else if (nal_type == 8 && !g_have_pps) { /* PPS */
+    } else if (nal_type == 8 && !g_have_pps) { /* PPS 参数集 */
         b64_encode(nal, len, g_pps_b64);
         g_have_pps = 1;
     }
@@ -152,9 +152,9 @@ typedef enum { TR_NONE, TR_TCP, TR_UDP } transport_t;
 typedef struct client {
     int                fd;           /* RTSP 控制 TCP 连接 */
     transport_t        tr;
-    /* TCP interleaved */
+    /* TCP interleaved 模式 */
     int                rtp_channel;  /* 通常 0 */
-    /* UDP */
+    /* UDP 模式 */
     int                udp_rtp_fd;
     int                udp_rtcp_fd;
     struct sockaddr_in client_rtp_addr;
@@ -219,12 +219,12 @@ static int send_nal_to_client(client_t *c, const uint8_t *nal, int nal_len,
         int pktlen = RTP_HDR_LEN + nal_len;
 
         if (c->tr == TR_TCP) {
-            /* interleaved: '$' channel len16 */
+            /* interleaved 帧头：'$' + 通道号 + 16 位长度 */
             uint8_t hdr[4] = { '$', (uint8_t)c->rtp_channel,
                                (uint8_t)((pktlen >> 8) & 0xff), (uint8_t)(pktlen & 0xff) };
             if (send_all(c->fd, (char *)hdr, 4) < 0) return -1;
             if (send_all(c->fd, (char *)rtp, pktlen) < 0) return -1;
-        } else { /* UDP */
+        } else { /* UDP 模式 */
             if (sendto(c->udp_rtp_fd, rtp, pktlen, 0,
                        (struct sockaddr *)&c->client_rtp_addr, sizeof(c->client_rtp_addr)) < 0) {
                 if (errno == EAGAIN || errno == EWOULDBLOCK) return 0; /* 丢帧 */
@@ -236,7 +236,7 @@ static int send_nal_to_client(client_t *c, const uint8_t *nal, int nal_len,
 
     /* FU-A 分片 */
     uint8_t nal_hdr = nal[0];
-    uint8_t indicator = (nal_hdr & 0xE0) | 28; /* FU-A type 28 */
+    uint8_t indicator = (nal_hdr & 0xE0) | 28; /* FU-A 分片（类型号 28） */
     int offset = 1; /* 跳过原 NAL 头，FU header 承载 type */
     int first = 1;
     while (offset < nal_len) {
@@ -253,8 +253,8 @@ static int send_nal_to_client(client_t *c, const uint8_t *nal, int nal_len,
         rtp[10] = (c->ssrc >> 8) & 0xff; rtp[11] = c->ssrc & 0xff;
         rtp[RTP_HDR_LEN] = indicator;
         uint8_t fu = nal_hdr & 0x1f;
-        if (first) fu |= 0x80;      /* start */
-        if (last)  fu |= 0x40;      /* end */
+        if (first) fu |= 0x80;      /* S 位：分片起始 */
+        if (last)  fu |= 0x40;      /* E 位：分片结束 */
         rtp[RTP_HDR_LEN + 1] = fu;
         memcpy(rtp + RTP_HDR_LEN + 2, nal + offset, frag);
         int pktlen = RTP_HDR_LEN + 2 + frag;
@@ -427,7 +427,7 @@ static void handle_client(int cfd, struct sockaddr_in *caddr)
             snprintf(session_hdr, sizeof(session_hdr), "Session: %u;timeout=60", c->session_id);
 
             if (strstr(transport, "TCP") || strstr(transport, "interleaved")) {
-                /* TCP interleaved */
+                /* TCP interleaved 模式 */
                 c->tr = TR_TCP;
                 c->rtp_channel = 0;
                 int ch = 0;
@@ -441,7 +441,7 @@ static void handle_client(int cfd, struct sockaddr_in *caddr)
                 LOG_INF("rtsp SETUP TCP interleaved=%d session=%u from %s:%d",
                         ch, c->session_id, inet_ntoa(caddr->sin_addr), ntohs(caddr->sin_port));
             } else {
-                /* UDP unicast */
+                /* UDP 单播模式 */
                 c->tr = TR_UDP;
                 int cport = 0;
                 const char *p = strstr(transport, "client_port=");
