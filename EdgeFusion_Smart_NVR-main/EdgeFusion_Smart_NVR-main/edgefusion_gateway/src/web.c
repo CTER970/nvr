@@ -727,6 +727,97 @@ static int json_get_bool(const char *json, const char *key, int *out)
     return 0;
 }
 
+/* ─── /api/config POST：字段校验 ─── */
+/* 解析全部完成后、conf_save 之前统一校验。失败时栈上副本 new_cfg 直接废弃：
+ * 不落盘、不热更、g_cfg 不转正——天然不会出现部分字段生效。
+ * 只判不改：吃 const 指针。字符串字段的违规信息不回显原值：
+ * 一是防原值里的引号破坏 JSON 响应体，二是凭据不能把秘密写进响应/日志。 */
+static int conf_check_range(int v, int lo, int hi, const char *name,
+                            char *err, size_t errsz)
+{
+    if (v < lo || v > hi) {
+        snprintf(err, errsz, "%s: expect %d-%d, got %d", name, lo, hi, v);
+        return -1;
+    }
+    return 0;
+}
+
+static int conf_check_frange(float v, float lo, float hi, const char *name,
+                             char *err, size_t errsz)
+{
+    if (v < lo || v > hi) {
+        snprintf(err, errsz, "%s: expect %.1f-%.1f, got %.3f", name, lo, hi, v);
+        return -1;
+    }
+    return 0;
+}
+
+static int validate_conf(const gateway_conf_t *c, char *err, size_t errsz)
+{
+    /* 端口 1-65535。<1024 特权端口不硬拦：嵌入式部署常以 root 运行，
+     * 硬拦会拒绝合法配置；真正拦的是 0 与 >65535（bind 参数非法，
+     * 且重启前毫无症状——改动落盘后下次启动 web/rtsp 直接起不来）。 */
+    if (conf_check_range(c->web_port, 1, 65535, "web_port", err, errsz))
+        return -1;
+    if (conf_check_range(c->rtsp_server_port, 1, 65535, "rtsp_server_port", err, errsz))
+        return -1;
+    if (conf_check_range(c->mqtt_port, 1, 65535, "mqtt_port", err, errsz))
+        return -1;
+
+    /* 帧率 <=0 不会崩：frame_grabber.c:138 的 (target_fps > 0) 守卫会整体
+     * 关闭节流，每帧全解码+缩放+编码（白烧清单满功率）。上限取上游源
+     * 帧率量级，超出无收益；ai 侧每张图还是一次计费云调用。 */
+    if (conf_check_range(c->web_mjpeg_fps, 1, 30, "web_mjpeg_fps", err, errsz))
+        return -1;
+    if (conf_check_range(c->ai_fps, 1, 30, "ai_fps", err, errsz))
+        return -1;
+
+    /* recorder.c:226 切段比较无守卫：<=0 时每个关键帧都开新段（文件爆炸）。
+     * 下限 10s 防过度切段（小文件管理开销 + SD 卡磨损），上限 86400 防单文件过大。 */
+    if (conf_check_range(c->segment_seconds, 10, 86400, "segment_seconds", err, errsz))
+        return -1;
+
+    /* JPEG 质量：FFmpeg qscale 契约范围，越界行为未定义。 */
+    if (conf_check_range(c->ai_jpeg_quality, 1, 100, "ai_jpeg_quality", err, errsz))
+        return -1;
+
+    /* 置信度是概率：>1 永不触发（报警静默失效），<0 恒触发（刷库刷铃）。 */
+    if (conf_check_frange(c->alarm_min_confidence, 0.0f, 1.0f,
+                          "alarm_min_confidence", err, errsz))
+        return -1;
+
+    /* GPIO：-1 = 禁用该路（合法语义），其余须落在常见 sysfs 编号范围内；
+     * 越界值在响铃时 export/write 失败，报警链静默断掉。 */
+    if (conf_check_range(c->alarm_gpio_led, -1, 1023, "alarm_gpio_led", err, errsz))
+        return -1;
+    if (conf_check_range(c->alarm_gpio_buzzer, -1, 1023, "alarm_gpio_buzzer", err, errsz))
+        return -1;
+
+    /* 传输枚举：长度合法但值不在集合内时，FFmpeg av_dict 静默忽略走默认，
+     * 行为与用户意图不符且无任何报错。 */
+    if (strcmp(c->rtsp_transport, "tcp") && strcmp(c->rtsp_transport, "udp")) {
+        snprintf(err, errsz, "rtsp_transport: expect tcp or udp");
+        return -1;
+    }
+
+    /* 拉流地址：空串/非 rtsp:// 前缀会让 avformat 打不开源，进入重连风暴。 */
+    if (strncmp(c->rtsp_url, "rtsp://", 7) != 0) {
+        snprintf(err, errsz, "rtsp_url: expect non-empty rtsp:// URL");
+        return -1;
+    }
+
+    /* 凭据：GET 回显是掩码形态（web.c:614 "%.8s****"，短值则纯 "****"），
+     * 前端原样回传时必须拒绝——否则真值被掩码覆盖，且下次回显对污染值
+     * 再掩码得到自身（不动点自锁）。真实凭据含四连星概率可忽略，
+     * 误拒代价（换 token）远小于漏放代价。 */
+    if (strstr(c->anthropic_auth_token, "****") || strstr(c->mqtt_pass, "****")) {
+        snprintf(err, errsz, "credentials: masked placeholder not accepted");
+        return -1;
+    }
+
+    return 0;
+}
+
 /* ─── /api/config POST：更新配置 ─── */
 /* 解析新配置，保存到文件并触发允许的热更新。 */
 static void serve_config_post(int cfd, const char *body, int body_len)
@@ -811,6 +902,17 @@ static void serve_config_post(int cfd, const char *body, int body_len)
         strncpy(new_cfg.log_file, buf, sizeof(new_cfg.log_file) - 1);
 
     free(js);
+
+    /* 全部解析完成后、落盘前统一校验：失败直接 400，new_cfg 废弃，
+     * 不落盘、不热更、g_cfg 不转正——不产生部分应用。 */
+    char verr[128];
+    if (validate_conf(&new_cfg, verr, sizeof(verr)) != 0) {
+        char ebody[192];
+        snprintf(ebody, sizeof(ebody),
+                 "{\"ok\":false,\"error\":\"%s\"}", verr);
+        send_json(cfd, 400, ebody, (int)strlen(ebody));
+        return;
+    }
 
     /* 写回配置文件 */
     if (conf_save(&new_cfg) != 0) {
