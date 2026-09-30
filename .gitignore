@@ -8,3 +8,8 @@ __pycache__/
 # ZCode 会话临时目录
 .zcode/
 inner_git_backup_0830/
+desktop.ini
+.workbuddy/
+.claude/learning/面试备战/通用八股底稿/
+刘秉航_*.docx
+刘秉航_*.pdf
