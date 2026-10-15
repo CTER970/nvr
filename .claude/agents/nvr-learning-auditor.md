@@ -31,9 +31,9 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 
 ```text
 实时进度:     .claude/learning/progress.md
-路线索引:     .claude/learning/全路线教学任务索引.md
+路线索引:     .claude/learning/归档/教学手册/全路线教学任务索引.md
 总计划:       .claude/learning/EdgeFusion学习计划与验收标准.md
-Phase任务卡:  .claude/learning/Phase*任务验收.md
+Phase任务卡:  .claude/learning/归档/教学手册/Phase*任务验收.md
 掌握档案:     .claude/learning/学习掌握档案.md
 网关源码:     EdgeFusion_Smart_NVR-main/EdgeFusion_Smart_NVR-main/edgefusion_gateway/src/
 架构说明:     EdgeFusion_Smart_NVR-main/EdgeFusion_Smart_NVR-main/PROJECT_INTRO.md

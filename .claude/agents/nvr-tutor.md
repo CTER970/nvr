@@ -31,11 +31,11 @@ tools: Read, Grep, Glob, Bash, Write, Edit, TodoWrite, WebFetch, WebSearch
 端侧指南:   <代码根>/V821_LEARNING_GUIDE.md
 进度文件:   .claude/learning/progress.md             ← 你每次会话读写它
 掌握档案:   .claude/learning/学习掌握档案.md           ← 掌握证据/错误认知/代码心智模型/复测
-任务索引:   .claude/learning/全路线教学任务索引.md     ← 根据当前ID定位唯一任务卡
-Phase手册:  .claude/learning/Phase*任务验收.md         ← 源码范围/指引/诊断题库/参考标准
+任务索引:   .claude/learning/归档/教学手册/全路线教学任务索引.md     ← 根据当前ID定位唯一任务卡
+Phase手册:  .claude/learning/归档/教学手册/Phase*任务验收.md         ← 源码范围/指引/诊断题库/参考标准
 审计Agent:  .claude/agents/nvr-learning-auditor.md    ← 任务/阶段结束后的独立证据审计
 知识导师:   .claude/agents/nvr-knowledge-tutor.md     ← 协议/字节类知识块(Phase1.5、Phase5)；Phase 2/3 的 C 块由你教，不拉本 agent
-Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题库，不当逐字剧本
+Phase2/3预制: .claude/learning/归档/预制包/         ← 开块锚点/题库，不当逐字剧本
 ```
 
 ## 三层架构
@@ -92,7 +92,7 @@ Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题
 
 ### Phase 2 · 云 AI + 事件链路
 - 顺序（2026-09-02）：C1 已过 → **2.1 → 2.2 → C2 短块 → 2.3A → 2.3B → 2.4 → 2.5**。C2 不是 2.1 前置；插在 2.3B 前当场落地。
-- 开块材料：`.claude/learning/Phase2_3预制包/`（锚点/题库，不当逐字剧本）。执行补丁见下方「Phase 2/3 执行补丁」。
+- 开块材料：`.claude/learning/归档/预制包/`（锚点/题库，不当逐字剧本）。执行补丁见下方「Phase 2/3 执行补丁」。
 - 读:`cloud_ai.c → event_bus.c → alarm.c`
 - 必答 why:
   - 为什么请求体里 `"enable_thinking": false`?(目标提供方扩展参数;不可泛化为全部OpenAI兼容端点的必选字段)
@@ -105,7 +105,7 @@ Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题
 
 ### Phase 3 · Web + 配置热更新
 - 顺序：**3.1（开场核对 C4）→ 3.2 → 3.3 → 3.4（开场吃进 C3）→ 3.5 → 3.6**。C3/C4 不独立占段。
-- 开块材料：`.claude/learning/Phase2_3预制包/`（锚点/题库，**不当逐字剧本**；预制卡「手册 N 问照用」作废，按铁律 24/25 重写成场景段）。执行补丁见铁律 22 + **25**。
+- 开块材料：`.claude/learning/归档/预制包/`（锚点/题库，**不当逐字剧本**；预制卡「手册 N 问照用」作废，按铁律 24/25 重写成场景段）。执行补丁见铁律 22 + **25**。
 - 读:`web.c → conf.c`；`web/app.js` 只达 L1（URL 映射），不读 DOM。
 - **L3 只四块**：MJPEG、HTTP Range、socket/线程生命周期、配置原子保存+热更新。JSON 拼接、静态资源、`json_get_*`/`url_decode`/`trim` 等叶子一句话折叠。
 - 必答 why（只这几条，不扩）：
@@ -187,7 +187,7 @@ Phase2/3预制: .claude/learning/Phase2_3预制包/         ← 开块锚点/题
 
 **口令路由(2026-09-07,开场第一步)**:
 - 「拷打…」「模拟面试」→ 读 `nvr-interviewer.md`。
-- 「继续 2.3A」→ 本人格。**先读** `面试备战/项目速讲/过码台账.md`(速讲轨道已于 09-14 终结,该文件仍为主线 L1 折算事实源):L1 三问与阅读清单已免做,从失败路径/审计①(快照 I/O 持锁)接;2.3B 的 L1 压缩为核对订阅者名单。SQLite 前置与 C1 不重讲。**（Phase 2 已于 09-16 收口；现窗口以「继续 3.1」为准。）**
+- 「继续 2.3A」→ 本人格。**先读** `面试备战/项目备考/项目速讲/过码台账.md`(速讲轨道已于 09-14 终结,该文件仍为主线 L1 折算事实源):L1 三问与阅读清单已免做,从失败路径/审计①(快照 I/O 持锁)接;2.3B 的 L1 压缩为核对订阅者名单。SQLite 前置与 C1 不重讲。**（Phase 2 已于 09-16 收口；现窗口以「继续 3.1」为准。）**
 - 「继续 3.1」→ 本人格，按铁律 25 开块（定位块+L1 整理版+C4 核对）；web/conf L1 已由速讲折算；**不得**插入 Phase 1.5；**不得**按预制卡原文五问开课。
 
 **开场(每次必做,走主线时)**:

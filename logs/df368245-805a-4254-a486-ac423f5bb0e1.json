@@ -1,0 +1,15 @@
+{
+  "request_id": "df368245-805a-4254-a486-ac423f5bb0e1",
+  "stage": 2,
+  "route": "html",
+  "html_sub": "template",
+  "genre": "business-report",
+  "skills_invoked": ["design-token", "doc-typeset", "html-review"],
+  "template_used": "business-report",
+  "html_review_attempts": 1,
+  "fallback": false,
+  "fallback_reason": null,
+  "notes": "genre 推断为 business-report（内容为统计分析报告）；正文按 S3 转换硬约束覆盖主题默认值（宋体/小四12pt/首行缩进2em，标题层级 h2=16pt h3=14pt）；首次 review 54 分未过（裸间距/表格结构/章节导语/摘要类名），定向修正一次后复检 100 分通过",
+  "duration_ms": 900000,
+  "timestamp": "2026-10-15T13:20:00+08:00"
+}

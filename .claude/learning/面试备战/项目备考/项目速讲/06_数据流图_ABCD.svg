@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="1080" viewBox="0 0 940 1080" font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif">
+  <defs>
+    <marker id="ah-a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#2563eb"/></marker>
+    <marker id="ah-b" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#16a34a"/></marker>
+    <marker id="ah-c" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#9333ea"/></marker>
+    <marker id="ah-f" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#ea580c"/></marker>
+    <marker id="ah-d" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#ca8a04"/></marker>
+    <marker id="ah-n" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,3.5 L0,7 Z" fill="#64748b"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="940" height="1080" fill="#ffffff"/>
+  <text x="20" y="40" font-size="19" font-weight="600" fill="#0f172a">EdgeFusion 边侧网关 · 主数据流与四条业务链路</text>
+
+  <!-- ===================== 连线（画在方块下层） ===================== -->
+  <!-- e1 端侧→泵 -->
+  <path d="M155,146 L155,196" fill="none" stroke="#64748b" stroke-width="1.8" marker-end="url(#ah-n)"/>
+  <text x="163" y="176" font-size="11" fill="#64748b" paint-order="stroke" stroke="#ffffff" stroke-width="3">RTSP H.264</text>
+  <!-- e2/e3/e4 泵→三腿 -->
+  <path d="M155,280 L155,334" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#ah-a)"/>
+  <text x="163" y="312" font-size="11" fill="#2563eb" paint-order="stroke" stroke="#ffffff" stroke-width="3">①</text>
+  <path d="M455,280 L455,334" fill="none" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ah-b)"/>
+  <text x="463" y="312" font-size="11" fill="#16a34a" paint-order="stroke" stroke="#ffffff" stroke-width="3">②</text>
+  <path d="M755,280 L755,334" fill="none" stroke="#ea580c" stroke-width="1.8" marker-end="url(#ah-f)"/>
+  <text x="763" y="312" font-size="11" fill="#ea580c" paint-order="stroke" stroke="#ffffff" stroke-width="3">③</text>
+  <!-- e5/e6/e7 第二层 -->
+  <path d="M155,412 L155,478" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#ah-a)"/>
+  <text x="163" y="450" font-size="11" fill="#2563eb" paint-order="stroke" stroke="#ffffff" stroke-width="3">remux fMP4</text>
+  <path d="M455,412 L455,478" fill="none" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ah-b)"/>
+  <text x="463" y="450" font-size="11" fill="#16a34a" paint-order="stroke" stroke="#ffffff" stroke-width="3">软解→JPEG</text>
+  <path d="M755,412 L755,478" fill="none" stroke="#ea580c" stroke-width="1.8" marker-end="url(#ah-f)"/>
+  <text x="763" y="450" font-size="11" fill="#ea580c" paint-order="stroke" stroke="#ffffff" stroke-width="3">RTP / FU-A 透传</text>
+  <!-- e8 段文件→web 回放 -->
+  <path d="M290,517 C308,517 302,661 320,661" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#ah-a)"/>
+  <text x="305" y="592" font-size="11" text-anchor="middle" fill="#2563eb" paint-order="stroke" stroke="#ffffff" stroke-width="3">MP4 回放 · Range</text>
+  <!-- e9 缓存→web MJPEG -->
+  <path d="M455,556 C455,585 430,592 430,622" fill="none" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ah-b)"/>
+  <text x="470" y="586" font-size="11" fill="#16a34a" paint-order="stroke" stroke="#ffffff" stroke-width="3">MJPEG 固定节拍</text>
+  <!-- e10 缓存→cloudai -->
+  <path d="M505,556 C505,690 755,660 755,766" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="630" y="640" font-size="11" text-anchor="middle" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">get_jpeg 深拷贝</text>
+  <!-- e11 cloudai→云端（右道） -->
+  <path d="M890,805 C908,805 916,770 916,730 L916,190 C916,150 908,107 890,107" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="908" y="472" font-size="11" text-anchor="end" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">HTTPS · JPEG</text>
+  <!-- e12 云端→cloudai（右道） -->
+  <path d="M890,121 C926,121 934,150 934,200 L934,755 C934,790 926,819 890,819" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="926" y="566" font-size="11" text-anchor="end" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">JSON 事件</text>
+  <!-- e13 cloudai→bus -->
+  <path d="M620,805 L590,805" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="605" y="742" font-size="11" text-anchor="middle" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">publish（非 none）</text>
+  <!-- e14 bus→web -->
+  <path d="M455,766 C455,735 485,735 485,700" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="497" y="736" font-size="11" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">事件列表查询</text>
+  <!-- e15 bus→alarm -->
+  <path d="M320,805 L290,805" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="305" y="742" font-size="11" text-anchor="middle" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">回调 · 锁外快返回</text>
+  <!-- e16 alarm→gpio -->
+  <path d="M190,844 C190,885 350,878 350,910" fill="none" stroke="#9333ea" stroke-width="1.8" marker-end="url(#ah-c)"/>
+  <text x="268" y="876" font-size="11" text-anchor="middle" fill="#9333ea" paint-order="stroke" stroke="#ffffff" stroke-width="3">GPIO 输出</text>
+  <!-- e17 web→浏览器 -->
+  <path d="M340,700 C340,745 302,760 302,800 L302,860 C302,890 262,894 240,910" fill="none" stroke="#64748b" stroke-width="1.8" marker-end="url(#ah-n)"/>
+  <text x="352" y="742" font-size="11" fill="#64748b" paint-order="stroke" stroke="#ffffff" stroke-width="3">预览 / 回放 / 事件页</text>
+  <!-- e18 浏览器→web（D） -->
+  <path d="M255,910 C255,875 310,862 310,820 L310,785 C310,740 380,735 400,700" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <text x="200" y="878" font-size="11" text-anchor="middle" fill="#ca8a04" paint-order="stroke" stroke="#ffffff" stroke-width="3">POST /api/config</text>
+  <!-- e19 web→conf（D） -->
+  <path d="M520,700 C520,745 612,760 612,800 L612,860 C612,895 690,900 715,910" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <text x="560" y="754" font-size="11" text-anchor="middle" fill="#ca8a04" paint-order="stroke" stroke="#ffffff" stroke-width="3">conf_save</text>
+  <!-- e20 conf→cloudai（D） -->
+  <path d="M730,910 L730,844" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <!-- e21 conf→alarm（D） -->
+  <path d="M640,910 C640,872 420,876 170,844" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <!-- e22 conf→frame_grabber（D） -->
+  <path d="M665,910 C665,850 598,830 598,800 L598,470 C598,432 520,442 505,412" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <!-- e23 conf→泵（D，右道） -->
+  <path d="M890,930 C914,930 930,905 930,860 L930,290 C930,252 914,238 890,238" fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah-d)"/>
+  <text x="908" y="440" font-size="11" text-anchor="end" fill="#ca8a04" paint-order="stroke" stroke="#ffffff" stroke-width="3">热更新五项</text>
+
+  <!-- ===================== 模块方块 ===================== -->
+  <!-- r0 -->
+  <g>
+    <rect x="20" y="68" width="270" height="78" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="20" y="68" width="3" height="78" fill="#64748b"/>
+    <text x="34" y="98" font-size="15" font-weight="600" fill="#0f172a">端侧 V821</text>
+    <text x="34" y="118" font-size="12" fill="#475569">摄像头 MIPI CSI → ISP → VENC</text>
+    <text x="34" y="134" font-size="12" fill="#475569">硬编 H.264 → RTSP 推流</text>
+  </g>
+  <g>
+    <rect x="620" y="68" width="270" height="78" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="620" y="68" width="3" height="78" fill="#64748b"/>
+    <text x="634" y="98" font-size="15" font-weight="600" fill="#0f172a">云端大模型</text>
+    <text x="634" y="118" font-size="12" fill="#475569">阿里百炼 · 多模态识别</text>
+  </g>
+  <!-- r1 泵 -->
+  <g>
+    <rect x="20" y="196" width="870" height="84" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="20" y="196" width="3" height="84" fill="#64748b"/>
+    <text x="34" y="226" font-size="15" font-weight="600" fill="#0f172a">拉流线程 stream_receiver</text>
+    <text x="34" y="252" font-size="12" fill="#475569">av_read_frame 后，同一码流包按 ①录像 → ②抽帧 → ③转发 顺序借用，统一 unref；读失败分级重连</text>
+  </g>
+  <!-- r2 -->
+  <g>
+    <rect x="20" y="334" width="270" height="78" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
+    <rect x="20" y="334" width="3" height="78" fill="#2563eb"/>
+    <rect x="241" y="342" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="261" y="355" font-size="11" text-anchor="middle" fill="#64748b">压缩域</text>
+    <text x="34" y="364" font-size="15" font-weight="600" fill="#0f172a">recorder</text>
+    <text x="34" y="384" font-size="12" fill="#475569">等关键帧起段与切段 · remux</text>
+    <text x="34" y="400" font-size="12" fill="#475569">CPU 开销近零（不解码）</text>
+  </g>
+  <g>
+    <rect x="320" y="334" width="270" height="78" rx="8" fill="#f0fdf4" stroke="#cbd5e1"/>
+    <rect x="320" y="334" width="3" height="78" fill="#16a34a"/>
+    <rect x="541" y="342" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="561" y="355" font-size="11" text-anchor="middle" fill="#64748b">像素域</text>
+    <text x="334" y="364" font-size="15" font-weight="600" fill="#0f172a">frame_grabber</text>
+    <text x="334" y="384" font-size="12" fill="#475569">旁路软解+缩放+JPEG 编码</text>
+    <text x="334" y="400" font-size="12" fill="#475569">跑在拉流线程 · 持续解码维持参考链</text>
+  </g>
+  <g>
+    <rect x="620" y="334" width="270" height="78" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
+    <rect x="620" y="334" width="3" height="78" fill="#ea580c"/>
+    <rect x="841" y="342" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="861" y="355" font-size="11" text-anchor="middle" fill="#64748b">压缩域</text>
+    <text x="634" y="364" font-size="15" font-weight="600" fill="#0f172a">rtsp_server</text>
+    <text x="634" y="384" font-size="12" fill="#475569">自研 RTSP/RTP · H.264 原样透传</text>
+    <text x="634" y="400" font-size="12" fill="#475569">TCP interleaved + UDP 单播</text>
+  </g>
+  <!-- r3 -->
+  <g>
+    <rect x="20" y="478" width="270" height="78" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
+    <rect x="20" y="478" width="3" height="78" fill="#2563eb"/>
+    <rect x="241" y="486" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="261" y="499" font-size="11" text-anchor="middle" fill="#64748b">压缩域</text>
+    <text x="34" y="508" font-size="15" font-weight="600" fill="#0f172a">fMP4 段文件</text>
+    <text x="34" y="528" font-size="12" fill="#475569">索引随各 fragment 就近落盘</text>
+    <text x="34" y="544" font-size="12" fill="#475569">水位删最旧 · 跳过当前段</text>
+  </g>
+  <g>
+    <rect x="320" y="478" width="270" height="78" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="320" y="478" width="3" height="78" fill="#16a34a"/>
+    <rect x="541" y="486" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="561" y="499" font-size="11" text-anchor="middle" fill="#64748b">像素域</text>
+    <text x="334" y="508" font-size="15" font-weight="600" fill="#0f172a">最新一帧 JPEG 缓存</text>
+    <text x="334" y="528" font-size="12" fill="#475569">单写者多读者 · 读者深拷贝取走</text>
+  </g>
+  <g>
+    <rect x="620" y="478" width="270" height="78" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
+    <rect x="620" y="478" width="3" height="78" fill="#ea580c"/>
+    <rect x="841" y="486" width="41" height="18" rx="3" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="861" y="499" font-size="11" text-anchor="middle" fill="#64748b">压缩域</text>
+    <text x="634" y="508" font-size="15" font-weight="600" fill="#0f172a">本地 RTSP 客户端</text>
+    <text x="634" y="528" font-size="12" fill="#475569">VLC · ffplay</text>
+  </g>
+  <!-- r4 web -->
+  <g>
+    <rect x="320" y="622" width="270" height="78" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="320" y="622" width="3" height="78" fill="#64748b"/>
+    <text x="334" y="652" font-size="15" font-weight="600" fill="#0f172a">web HTTP 服务</text>
+    <text x="334" y="672" font-size="12" fill="#475569">一连接一线程</text>
+    <text x="334" y="688" font-size="12" fill="#475569">慢客户端只占自身连接</text>
+  </g>
+  <!-- r5 -->
+  <g>
+    <rect x="20" y="766" width="270" height="78" rx="8" fill="#faf5ff" stroke="#cbd5e1"/>
+    <rect x="20" y="766" width="3" height="78" fill="#9333ea"/>
+    <text x="34" y="796" font-size="15" font-weight="600" fill="#0f172a">alarm</text>
+    <text x="34" y="816" font-size="12" fill="#475569">条件变量唤醒告警线程</text>
+    <text x="34" y="832" font-size="12" fill="#475569">GPIO=-1 禁用该路</text>
+  </g>
+  <g>
+    <rect x="320" y="766" width="270" height="78" rx="8" fill="#faf5ff" stroke="#cbd5e1"/>
+    <rect x="320" y="766" width="3" height="78" fill="#9333ea"/>
+    <text x="334" y="796" font-size="15" font-weight="600" fill="#0f172a">event_bus</text>
+    <text x="334" y="816" font-size="12" fill="#475569">SQLite 入库 + JPEG 快照</text>
+    <text x="334" y="832" font-size="12" fill="#475569">订阅广播（回调锁外快返回）</text>
+  </g>
+  <g>
+    <rect x="620" y="766" width="270" height="78" rx="8" fill="#faf5ff" stroke="#cbd5e1"/>
+    <rect x="620" y="766" width="3" height="78" fill="#9333ea"/>
+    <text x="634" y="796" font-size="15" font-weight="600" fill="#0f172a">cloud_ai 线程</text>
+    <text x="634" y="816" font-size="12" fill="#475569">独立线程 · 失败只丢当前帧</text>
+    <text x="634" y="832" font-size="12" fill="#475569">event_type==none 不发布</text>
+  </g>
+  <!-- r6 -->
+  <g>
+    <rect x="20" y="910" width="270" height="78" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+    <rect x="20" y="910" width="3" height="78" fill="#64748b"/>
+    <text x="34" y="940" font-size="15" font-weight="600" fill="#0f172a">浏览器</text>
+    <text x="34" y="960" font-size="12" fill="#475569">预览 · 回放 · 事件页 · 配置表单</text>
+    <text x="34" y="976" font-size="12" fill="#475569">事件列表是拉 · 预览是服务端推</text>
+  </g>
+  <g>
+    <rect x="320" y="910" width="270" height="78" rx="8" fill="#faf5ff" stroke="#cbd5e1"/>
+    <rect x="320" y="910" width="3" height="78" fill="#9333ea"/>
+    <text x="334" y="940" font-size="15" font-weight="600" fill="#0f172a">GPIO 告警输出</text>
+    <text x="334" y="960" font-size="12" fill="#475569">LED · 蜂鸣器（sysfs）</text>
+  </g>
+  <g>
+    <rect x="620" y="910" width="270" height="78" rx="8" fill="#fefce8" stroke="#cbd5e1"/>
+    <rect x="620" y="910" width="3" height="78" fill="#ca8a04"/>
+    <text x="634" y="940" font-size="15" font-weight="600" fill="#0f172a">conf</text>
+    <text x="634" y="960" font-size="12" fill="#475569">tmp+fsync+rename 原子保存</text>
+    <text x="634" y="976" font-size="12" fill="#475569">conf_apply_hot 热更新五项</text>
+  </g>
+
+  <!-- ===================== 图例 ===================== -->
+  <g font-size="13" fill="#0f172a">
+    <rect x="20" y="1012" width="12" height="12" fill="#2563eb"/><text x="38" y="1023">A 录像</text>
+    <rect x="120" y="1012" width="12" height="12" fill="#16a34a"/><text x="138" y="1023">B 预览</text>
+    <rect x="220" y="1012" width="12" height="12" fill="#9333ea"/><text x="238" y="1023">C 云AI</text>
+    <rect x="320" y="1012" width="12" height="12" fill="#ea580c"/><text x="338" y="1023">转发</text>
+    <rect x="410" y="1012" width="12" height="12" fill="#ca8a04"/><text x="428" y="1023">D 配置</text>
+    <line x1="510" y1="1018" x2="550" y2="1018" stroke="#64748b" stroke-width="1.8"/><text x="556" y="1023">数据流</text>
+    <line x1="625" y1="1018" x2="665" y2="1018" stroke="#ca8a04" stroke-width="1.5" stroke-dasharray="5 4"/><text x="671" y="1023">配置控制面</text>
+  </g>
+  <text x="20" y="1050" font-size="12" fill="#475569">①②③ = 同一码流包在拉流线程顺序借用、统一释放（下游只借用不持有）｜ A 与转发全程留在压缩域（不解码），B 是唯一像素域旁路 ｜ 云端挂了，录像与预览照跑（C 失败只丢帧）</text>
+  <text x="20" y="1070" font-size="12" fill="#475569">热更新五项 = 日志级别 / 报警 / AI / MJPEG 帧率 / 分段时长；源地址、端口、存储路径需重启</text>
+</svg>

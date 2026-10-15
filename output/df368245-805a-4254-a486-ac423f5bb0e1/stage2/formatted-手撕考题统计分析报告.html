@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="docx-page-size" content="A4">
+<title>Linux 应用开发与嵌入式面试"手撕代码"考题统计分析报告</title>
+<style>
+/* ================= 页面模型：正文页脚居中页码，封面/目录无页脚 ================= */
+@page {
+  @bottom-center { content: "第 " counter(page) " 页"; }
+}
+@page cover {
+  @bottom-center { content: none; }
+}
+section[role="cover"] { page: cover; }
+
+:root {
+  /* ===== design tokens：business-modern（design_tokens.json） ===== */
+  --typography-fontFamily-heading: "微软雅黑", "Microsoft YaHei", sans-serif;
+  --typography-fontFamily-bodyLatin: Calibri, "Helvetica Neue", sans-serif;
+  --typography-fontFamily-code: Consolas, "Source Code Pro", monospace;
+  --typography-fontSize-title: 28pt;
+  --typography-fontSize-subtitle: 18pt;
+  --typography-fontSize-h1: 20pt;
+  --typography-fontSize-coverTitle: 22pt;
+  --typography-fontSize-coverCategory: 14pt;
+  --typography-fontSize-sectionHeader: 13pt;
+  --typography-fontSize-dataLabel: 10pt;
+  --typography-fontSize-tiny: 7pt;
+  --typography-fontSize-caption: 9pt;
+  --typography-lineHeight-title: 1.3;
+  --typography-lineHeight-body: 1.6;
+  --typography-lineHeight-compact: 1.2;
+  --typography-fontWeight-heading: 600;
+  --typography-fontWeight-body: 400;
+  --typography-fontWeight-emphasis: 500;
+  --color-primary: #1565C0;
+  --color-secondary: #0288D1;
+  --color-accent: #00897B;
+  --color-text: #212121;
+  --color-textSecondary: #616161;
+  --color-heading: #1A237E;
+  --color-divider: #E0E0E0;
+  --color-background: #FFFFFF;
+  --color-surface: #F5F7FA;
+  --color-danger: #C62828;
+  --spacing-paragraph: 0.75em;
+  --spacing-sectionGap: 2.5em;
+  --spacing-cardPadding: 1.5em;
+  --spacing-xs: 0.3em;
+  --spacing-sm: 0.4em;
+  --spacing-tight: 0.6em;
+  --spacing-md: 0.8em;
+  --spacing-lg: 1.5em;
+  --spacing-xl: 3em;
+  --spacing-cover-top: 3.5cm;
+  --spacing-cover-bottom: 2cm;
+
+  /* ===== S3 转换硬约束覆盖（正文宋体 / 小四 / 首行缩进，标题层级比例） ===== */
+  --typography-fontFamily-body: "宋体", SimSun, serif;
+  --typography-fontSize-body: 12pt;
+  --typography-fontSize-h2: 16pt;
+  --typography-fontSize-h3: 14pt;
+  --typography-fontSize-small: 10.5pt;
+  --spacing-indent: 2em;
+
+  /* ===== 本地别名 ===== */
+  --fs-h2: var(--typography-fontSize-h2);
+  --fs-h3: var(--typography-fontSize-h3);
+  --fs-body: var(--typography-fontSize-body);
+  --fs-small: var(--typography-fontSize-small);
+  --fs-table: var(--typography-fontSize-dataLabel);
+  --fs-cover-title: var(--typography-fontSize-coverTitle);
+  --ff-heading: var(--typography-fontFamily-heading);
+  --ff-body: var(--typography-fontFamily-body);
+  --lh-body: var(--typography-lineHeight-body);
+  --fw-bold: 700;
+  --color-muted: var(--color-textSecondary);
+  --color-border: var(--color-divider);
+  --color-bg: var(--color-background);
+  --color-highlight: var(--color-surface);
+  --color-emphasis: var(--color-danger);
+  --spacing-block: 1em;
+  --spacing-section: 2em;
+  --page-content-width: 15.6cm;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--ff-body); font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--color-text); background: var(--color-bg);
+  max-width: var(--page-content-width); margin: 0 auto;
+}
+
+/* ================= 封面 ================= */
+section[role="cover"] { padding: var(--spacing-cover-top) 0 var(--spacing-cover-bottom) 0; }
+.cover-category {
+  font-family: var(--ff-heading); font-size: var(--typography-fontSize-coverCategory);
+  font-weight: var(--fw-bold); color: var(--color-primary); letter-spacing: 0.12em;
+  text-align: center; margin-bottom: var(--spacing-lg);
+}
+.cover-title {
+  font-family: var(--ff-heading); font-size: var(--fs-cover-title); font-weight: var(--fw-bold);
+  color: var(--color-heading); text-align: center; line-height: 1.5; margin-bottom: var(--spacing-md);
+}
+.cover-subtitle {
+  font-family: var(--ff-body); font-size: var(--typography-fontSize-subtitle);
+  color: var(--color-muted); text-align: center; margin-bottom: var(--spacing-xl);
+}
+.cover-meta { font-family: var(--ff-body); font-size: var(--fs-small); color: var(--color-muted); text-align: center; margin-bottom: var(--spacing-sm); }
+
+/* ================= 目录 ================= */
+.doc-toc { padding: var(--spacing-block) 0; }
+.toc-title {
+  font-family: var(--ff-heading); font-size: var(--fs-h3); font-weight: var(--fw-bold);
+  color: var(--color-heading); margin-bottom: var(--spacing-md);
+}
+.toc-list, .toc-list ol, .toc-list ul { list-style: none; list-style-type: none; padding-left: var(--spacing-lg); }
+.toc-list li { margin-bottom: var(--spacing-xs); font-size: var(--fs-body); }
+.toc-list a { color: var(--color-text); text-decoration: none; }
+
+/* ================= 正文 ================= */
+section[role="body"] { padding: var(--spacing-section) 0; }
+h2 {
+  font-family: var(--ff-heading); font-size: var(--fs-h2); font-weight: var(--fw-bold);
+  color: var(--color-heading); border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--spacing-xs); margin: var(--spacing-section) 0 var(--spacing-paragraph);
+}
+h3 {
+  font-family: var(--ff-heading); font-size: var(--fs-h3); font-weight: var(--fw-bold);
+  color: var(--color-primary); margin: var(--spacing-block) 0 var(--spacing-paragraph);
+}
+p { font-family: var(--ff-body); font-size: var(--fs-body); color: var(--color-text); line-height: var(--lh-body); }
+.chapter p { text-indent: var(--spacing-indent); margin-bottom: var(--spacing-paragraph); }
+.appendix p { text-indent: var(--spacing-indent); margin-bottom: var(--spacing-paragraph); }
+.chapter p.callout-p, .chapter .abstract-card p, .chapter td p { text-indent: 0; }
+
+/* 执行摘要 */
+.executive-summary { margin-bottom: var(--spacing-section); }
+.summary-title {
+  font-family: var(--ff-heading); font-size: var(--fs-h3); font-weight: var(--fw-bold);
+  color: var(--color-heading); margin-bottom: var(--spacing-block);
+}
+.kpi-table { margin-bottom: var(--spacing-block); }
+.kpi-table th { background: var(--color-primary); color: var(--color-background); }
+.kpi-table td { text-align: center; padding: var(--spacing-md) var(--spacing-sm); background: var(--color-surface); border: 1px solid var(--color-border); }
+.kpi-value { font-family: var(--ff-heading); font-size: var(--fs-h3); font-weight: var(--fw-bold); color: var(--color-primary); text-align: center; }
+.abstract-card { margin: var(--spacing-paragraph) 0; }
+.abstract-card th { background: var(--color-primary); color: var(--color-background); text-align: left; }
+.abstract-card td { background: var(--color-surface); border-left: 4px solid var(--color-primary); padding: var(--spacing-block); }
+.abstract-card p { text-indent: 0; margin-bottom: var(--spacing-paragraph); }
+
+/* 提示段（单段落强调） */
+p.callout-p {
+  border-left: 4px solid var(--color-primary); background: var(--color-surface);
+  padding: var(--spacing-tight) var(--spacing-md); margin: var(--spacing-paragraph) 0;
+}
+p.callout-warn { border-left: 4px solid var(--color-danger); background: var(--color-surface); padding: var(--spacing-tight) var(--spacing-md); margin: var(--spacing-paragraph) 0; }
+
+/* 数据强调 */
+.data-emphasis { color: var(--color-emphasis); font-weight: var(--fw-bold); }
+
+/* 表格 */
+table { border-collapse: collapse; width: 100%; margin: var(--spacing-paragraph) 0; }
+caption {
+  font-family: var(--ff-heading); font-size: var(--fs-small); font-weight: var(--fw-bold);
+  color: var(--color-heading); text-align: center; margin-bottom: var(--spacing-sm);
+}
+th {
+  background: var(--color-surface); color: var(--color-heading); font-weight: var(--fw-bold);
+  border: 1px solid var(--color-border); padding: var(--spacing-sm) var(--spacing-tight); text-align: center;
+  font-family: var(--ff-heading); font-size: var(--fs-table);
+}
+td {
+  border: 1px solid var(--color-border); padding: var(--spacing-sm) var(--spacing-tight);
+  font-family: var(--ff-body); font-size: var(--fs-table); color: var(--color-text);
+}
+.table-note { font-size: var(--fs-small); color: var(--color-muted); text-indent: 0; margin-bottom: var(--spacing-paragraph); }
+
+/* 列表 */
+ol.conclusion-list { padding-left: var(--spacing-lg); margin-bottom: var(--spacing-paragraph); }
+ol.conclusion-list li { margin-bottom: var(--spacing-paragraph); }
+
+/* 章节分隔 */
+hr.divider { border: none; border-top: 1px solid var(--color-divider); margin: var(--spacing-section) 0; }
+
+/* 附录 */
+.appendix { border-top: 1px solid var(--color-divider); padding-top: var(--spacing-section); }
+</style>
+</head>
+<body>
+
+<!-- ================= 封面 ================= -->
+<section role="cover">
+  <p class="cover-category">面试考题数据研究</p>
+  <p class="cover-title">Linux 应用开发与嵌入式面试<br>"手撕代码"考题统计分析报告</p>
+  <p class="cover-subtitle">基于 134 份真实面经样本的频次统计、考点排序与备考建议</p>
+  <p class="cover-meta">报告日期：2026 年 10 月 15 日</p>
+  <p class="cover-meta">数据基础：134 份面经样本 · 104 家用人单位 · 576 条题目实例</p>
+  <p class="cover-meta">配套数据：手撕面经样本库（2026-10-15） · 手撕考题频次统计表（2026-10-15）</p>
+</section>
+
+<!-- ================= 目录 ================= -->
+<section role="cover">
+  <nav class="doc-toc" aria-label="文档目录">
+    <p class="toc-title">目录</p>
+    <ol class="toc-list">
+      <li><a href="#section-1">一、样本说明</a>
+        <ol>
+          <li><a href="#section-1-1">（一）采集目的与方法</a></li>
+          <li><a href="#section-1-2">（二）纳入与剔除标准</a></li>
+          <li><a href="#section-1-3">（三）样本构成</a></li>
+          <li><a href="#section-1-4">（四）样本局限性</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-2">二、手撕环节总体形态分析</a>
+        <ol>
+          <li><a href="#section-2-1">（一）手撕是常规环节，而非加分项</a></li>
+          <li><a href="#section-2-2">（二）环节形式与时长</a></li>
+          <li><a href="#section-2-3">（三）考察方式的三段式特征</a></li>
+          <li><a href="#section-2-4">（四）难度分层</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-3">三、频次统计</a>
+        <ol>
+          <li><a href="#section-3-1">（一）大类频次表</a></li>
+          <li><a href="#section-3-2">（二）高频考点排序（Top 30）</a></li>
+          <li><a href="#section-3-3">（三）题型分布的结构性特征</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-4">四、高频考点考法解析</a></li>
+      <li><a href="#section-5">五、结论与备考建议</a>
+        <ol>
+          <li><a href="#section-5-1">（一）核心结论</a></li>
+          <li><a href="#section-5-2">（二）分级练习清单</a></li>
+          <li><a href="#section-5-3">（三）练习方法与验收标准</a></li>
+          <li><a href="#section-5-4">（四）与既有备考计划的对照</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-6">附录</a>
+        <ol>
+          <li><a href="#section-6-1">附录 A：来源平台分布</a></li>
+          <li><a href="#section-6-2">附录 B：去重与剔除记录</a></li>
+          <li><a href="#section-6-3">附录 C：数据文件索引</a></li>
+        </ol>
+      </li>
+    </ol>
+  </nav>
+</section>
+
+<!-- ================= 正文 ================= -->
+<section role="body" data-page-restart="1">
+
+  <div class="executive-summary">
+    <p class="summary-title">执行摘要</p>
+    <table class="kpi-table">
+      <thead>
+        <tr><th>有效样本</th><th>含手撕题样本</th><th>覆盖用人单位</th><th>记录题目实例</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p class="kpi-value">134 份</p></td>
+          <td><p class="kpi-value">116 份 · 86.6%</p></td>
+          <td><p class="kpi-value">104 家</p></td>
+          <td><p class="kpi-value">576 条</p></td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="abstract-card">
+      <thead>
+        <tr><th>核心要点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>
+        <p>&nbsp;&nbsp;本报告基于 2026 年 10 月 15 日四路并行联网采集的 134 份真实面经，系统统计嵌入式 / Linux 应用开发方向面试中"手撕代码"环节的题型分布与频次。手撕环节出现率为 <span class="data-emphasis">86.6%</span>，已接近常规环节而非加分项。</p>
+        <p>&nbsp;&nbsp;考点呈"两超多强"格局：链表操作（43.1%）与字符串 / 库函数手写（38.8%）为超级大类；单链表反转以 26 次居单项第一，链表判环（15 次）、环形缓冲区（11 次）、strcpy 手写（10 次）紧随其后。嵌入式特色题型（环形缓冲、滑动滤波、状态机、Makefile、socket 流程）合计占 23.3%，是区别于通用软开岗的签名题型。</p>
+        <p>&nbsp;&nbsp;难度预期以基础档为主：Top 30 题目绝大多数要求"一遍写对 + 讲清复杂度 + 处理边界"。报告第五章给出 P0 / P1 / P2 分级练习清单与四步验收标准，并与项目既有手撕训练序列做了对照校准。</p>
+      </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <main>
+
+  <!-- ================= 一、样本说明 ================= -->
+  <div class="chapter">
+    <h2 id="section-1">一、样本说明</h2>
+    <p>本章说明样本的来源与采集方法、纳入与剔除标准、样本构成，以及使用频率数据前必须知晓的局限。</p>
+
+    <h3 id="section-1-1">（一）采集目的与方法</h3>
+    <p>本报告面向嵌入式 Linux 应用开发方向（C 语言为主）的校招 / 实习求职者，目标是回答三个问题：面试中的"手撕代码"环节到底考什么、各类题型出现多频繁、应当如何分配练习优先级。</p>
+    <p>采集于 2026 年 10 月 15 日完成，采用四路并行联网调研：牛客网面经区（66 份）、CSDN 及旗下开发者社区（40 份）、按公司定向检索（29 份）、手撕题专题统计类来源（28 份），共获得 158 条原始记录。经三轮整理后保留 134 份有效样本。</p>
+
+    <h3 id="section-1-2">（二）纳入与剔除标准</h3>
+    <p>样本纳入需同时满足以下条件：其一，内容为真实面试经历分享（含单场次面经、多公司汇总帖、专题题库整理帖）；其二，方向属于嵌入式、Linux 应用 / 系统开发或 C/C++ 工程岗；其三，口径为校招或实习，社招面经不计入。</p>
+    <p>题目记录口径为：仅收录面经中明确出现的"手撕 / 手写 / 白板 / 投屏写码 / 纸上写码 / 本地 IDE 写码 / 在线编程链接 / 笔试编程题"类题目，逐条保留原文措辞；纯口头八股问答不计入题目清单。若整篇面经只有八股没有手撕，样本保留并在题目清单标注"无手撕环节"，用于计算手撕环节出现率。</p>
+    <p>去重处理包括：同一 URL 只计一次；跨平台同内容镜像合并（如 CVTE 同一篇面经在牛客与博客园双发，保留一份）；与项目既有样本库（第一轮 152 份八股池）比对，剔除 URL 已收录的 15 条记录，保证本轮样本的独立性。完整去重记录见附录 B。</p>
+
+    <h3 id="section-1-3">（三）样本构成</h3>
+    <table>
+      <caption>表 1 样本构成总览</caption>
+      <thead>
+        <tr><th>维度</th><th>构成</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>有效样本总数</td><td>134 份</td></tr>
+        <tr><td>含手撕 / 笔试编程题</td><td>116 份（86.6%）</td></tr>
+        <tr><td>无手撕环节</td><td>18 份（13.4%）</td></tr>
+        <tr><td>覆盖公司 / 单位</td><td>104 家</td></tr>
+        <tr><td>记录到的题目实例</td><td>576 条</td></tr>
+        <tr><td>手撕形式：现场手撕</td><td>50 份（37.3%）</td></tr>
+        <tr><td>手撕形式：汇总 / 整理类</td><td>49 份（36.6%）</td></tr>
+        <tr><td>手撕形式：笔试编程</td><td>10 份（7.5%）</td></tr>
+        <tr><td>手撕形式：机考 + 现场混合</td><td>7 份（5.2%）</td></tr>
+      </tbody>
+    </table>
+    <p>单公司样本中，出现次数最多的是大疆（5 份）、海康威视（5 份）、华为（4 份）、联发科（4 份）、小米（3 份）、小鹏汽车（3 份）、CVTE（3 份）、乐鑫（3 份），其余覆盖蔚来、vivo、科大讯飞、汇川、大华、荣耀、兆易创新、星宸、地平线、Momenta、腾讯、字节、奇安信、经纬恒润、迈瑞医疗、海尔、格力、影石等百余家单位。</p>
+
+    <h3 id="section-1-4">（四）样本局限性</h3>
+    <p class="callout-warn">&nbsp;&nbsp;<strong>样本局限性声明：</strong>36.6% 的样本为汇总 / 整理类帖子，个别原始面经内容会被汇总帖转述，频率统计中存在同源内容重复计数的可能，频次应当作"量级与排序"使用；样本时间跨度约 2017—2026 十个校招周期，早期帖子约占三分之一；部分牛客页面需登录才能打开全文，采集采用搜索引擎收录的正文快照替代，题目措辞与快照一致，但无法逐篇复核原帖。</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================= 二、手撕环节总体形态分析 ================= -->
+  <div class="chapter">
+    <h2 id="section-2">二、手撕环节总体形态分析</h2>
+    <p>本章从出现率、环节形式、考察方式与难度分层四个维度，刻画手撕环节在嵌入式 / Linux 应用岗面试中的整体形态。</p>
+
+    <h3 id="section-2-1">（一）手撕是常规环节，而非加分项</h3>
+    <p>116/134 份样本存在手撕或笔试编程题，出现率 <span class="data-emphasis">86.6%</span>。这一数字显著高于项目既有八股池中"手撕约 21%"的历史记录，原因是口径差异：既有样本库以八股问答为主要记录对象，手撕题只在面经作者顺带提及时才被记下；本轮为手撕专题采集，凡有写码环节即完整记录。两个数字共同指向的结论是：手撕在嵌入式 / Linux 应用岗面试中接近标配，且大量存在于一面。</p>
+    <p>在 18 份"无手撕"样本中，比亚迪、紫光展锐、瑞芯微、兆易创新、宇视、荣耀、商汤、美的、格力、海信、影石等占多数，集中在 SoC 原厂与部分家电车企，这类公司更偏向八股加项目深挖。</p>
+
+    <h3 id="section-2-2">（二）环节形式与时长</h3>
+    <p>现场手撕的具体形态包括四种：面试官口述题目、候选人投屏或共享屏幕写码（最常见）；纸上手写（多见于老牌厂与线下场）；本地 IDE 写码后讲解（大疆、Momenta、TP-Link 等）；发送 LeetCode 链接在线编程（蔚来提前批、蚂蚁等）。笔试编程则是独立的前置门槛，小米、华为、大疆、荣耀、乐鑫、海尔等均有"选择题 + 2 道编程题"的牛客体系笔试记录，采用核心代码模式（只写功能函数，不管输入输出）。单场手撕时长从 10 分钟到 45 分钟不等，联发科曾有"42 分钟手撕三道题"的记录，CVTE 二面为"写半小时代码"。</p>
+
+    <h3 id="section-2-3">（三）考察方式的三段式特征</h3>
+    <p>从样本原文看，手撕环节普遍遵循"写代码 → 讲思路 → 追问"的三段式：写完后面试官要求口述时间 / 空间复杂度；追问边界条件（空链表、单节点、内存重叠、溢出）；追问优化或场景变体（如大疆问"窗口扩大到很大怎么优化""浮点累加精度问题怎么办"，华为问"中断里写、任务里读怎么保证数据不乱"）。这意味着手撕题的评分标准不仅是"写对"，还包括复杂度表述、边界意识与工程变体应答。</p>
+
+    <h3 id="section-2-4">（四）难度分层</h3>
+    <p>样本中的手撕题可清晰分为三档。基础档（占绝大多数）：单链表反转、strcpy / memcpy 手写、冒泡 / 快排、大小端判断、宏定义等，要求一遍写对并讲清复杂度。进阶档：两个栈实现队列、LRU、生产者消费者、线程安全单例、IP 转换、TopK、层序遍历、LCA 等 LeetCode 中等题。冲刺档（出现于消费电子与互联网对口岗）：JSON 字符串转对象（小米）、扫雷随机布雷（小米）、132 模式（小米汽车）、字符串乘法（CVTE）、无锁 SPSC 环形缓冲区（微软）、最小覆盖子串（微软）等。样本中未出现 LeetCode hard 级别的死磕型题目，"写得对 + 边界清 + 复杂度说得准"是普遍预期。</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================= 三、频次统计 ================= -->
+  <div class="chapter">
+    <h2 id="section-3">三、频次统计</h2>
+    <p>本章给出知识大类频次表、Top 30 高频考点排序，并归纳题型分布的结构性特征。</p>
+
+    <h3 id="section-3-1">（一）大类频次表</h3>
+    <p>按"至少包含该类一道题目的样本数"统计（分母：含手撕题的 116 份样本）：</p>
+    <table>
+      <caption>表 2 手撕考题知识大类频次表</caption>
+      <thead>
+        <tr><th>排名</th><th>知识大类</th><th>样本数</th><th>占含手撕样本比</th><th>占全部样本比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>链表操作</td><td>50</td><td>43.1%</td><td>37.3%</td></tr>
+        <tr><td>2</td><td>字符串处理与库函数手写</td><td>45</td><td>38.8%</td><td>33.6%</td></tr>
+        <tr><td>3</td><td>数组与矩阵</td><td>30</td><td>25.9%</td><td>22.4%</td></tr>
+        <tr><td>4</td><td>嵌入式与系统编程特色</td><td>27</td><td>23.3%</td><td>20.1%</td></tr>
+        <tr><td>5</td><td>位运算与大小端</td><td>24</td><td>20.7%</td><td>17.9%</td></tr>
+        <tr><td>6</td><td>排序与查找</td><td>24</td><td>20.7%</td><td>17.9%</td></tr>
+        <tr><td>7</td><td>C++ 类与设计模式</td><td>24</td><td>20.7%</td><td>17.9%</td></tr>
+        <tr><td>8</td><td>C 语言基础（宏 / 结构体 / 对齐 / 指针）</td><td>23</td><td>19.8%</td><td>17.2%</td></tr>
+        <tr><td>9</td><td>动态规划 / 回溯 / 贪心</td><td>19</td><td>16.4%</td><td>14.2%</td></tr>
+        <tr><td>10</td><td>二叉树与递归</td><td>18</td><td>15.5%</td><td>13.4%</td></tr>
+        <tr><td>11</td><td>数学与逻辑题</td><td>16</td><td>13.8%</td><td>11.9%</td></tr>
+        <tr><td>12</td><td>其他（题名未录 / 非算法）</td><td>13</td><td>11.2%</td><td>9.7%</td></tr>
+        <tr><td>13</td><td>并发编程</td><td>12</td><td>10.3%</td><td>9.0%</td></tr>
+        <tr><td>14</td><td>代码改错与输出分析</td><td>11</td><td>9.5%</td><td>8.2%</td></tr>
+        <tr><td>15</td><td>栈与队列</td><td>6</td><td>5.2%</td><td>4.5%</td></tr>
+        <tr><td>16</td><td>图 / 网格 / 几何</td><td>3</td><td>2.6%</td><td>2.2%</td></tr>
+      </tbody>
+    </table>
+    <p class="table-note">注：占比分母分别为含手撕题的 116 份样本与全部 134 份样本；同一样本含同类多题时该类只计一次。</p>
+
+    <h3 id="section-3-2">（二）高频考点排序（Top 30）</h3>
+    <table>
+      <caption>表 3 手撕考题高频考点排序（Top 30）</caption>
+      <thead>
+        <tr><th>排名</th><th>题目</th><th>大类</th><th>样本数</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>单链表反转（迭代 / 递归）</td><td>链表操作</td><td>26</td></tr>
+        <tr><td>2</td><td>链表判环（快慢指针）</td><td>链表操作</td><td>15</td></tr>
+        <tr><td>3</td><td>环形缓冲区 / 循环队列</td><td>嵌入式与系统编程特色</td><td>11</td></tr>
+        <tr><td>4</td><td>strcpy 手写</td><td>字符串与库函数</td><td>10</td></tr>
+        <tr><td>5</td><td>memcpy / memmove 手写（含内存重叠）</td><td>字符串与库函数</td><td>9</td></tr>
+        <tr><td>6</td><td>冒泡排序（手写）</td><td>排序与查找</td><td>9</td></tr>
+        <tr><td>7</td><td>合并两个有序链表 / 数组</td><td>链表操作</td><td>9</td></tr>
+        <tr><td>8</td><td>大小端判断 / 字节序转换</td><td>位运算与大小端</td><td>9</td></tr>
+        <tr><td>9</td><td>快速排序（手写）</td><td>排序与查找</td><td>8</td></tr>
+        <tr><td>10</td><td>链表插入 / 删除操作（含双链表）</td><td>链表操作</td><td>8</td></tr>
+        <tr><td>11</td><td>MAX / MIN 宏（含副作用）</td><td>C 语言基础</td><td>7</td></tr>
+        <tr><td>12</td><td>单例模式（含线程安全）</td><td>C++ 类与设计模式</td><td>7</td></tr>
+        <tr><td>13</td><td>置位 / 清零 / 翻转某位（寄存器位操作）</td><td>位运算与大小端</td><td>7</td></tr>
+        <tr><td>14</td><td>二进制中 1 的个数</td><td>位运算与大小端</td><td>6</td></tr>
+        <tr><td>15</td><td>字符串整体翻转</td><td>字符串与库函数</td><td>6</td></tr>
+        <tr><td>16</td><td>层序遍历（BFS）</td><td>二叉树与递归</td><td>6</td></tr>
+        <tr><td>17</td><td>二分查找</td><td>排序与查找</td><td>5</td></tr>
+        <tr><td>18</td><td>最长无重复字符子串</td><td>字符串与库函数</td><td>5</td></tr>
+        <tr><td>19</td><td>生产者消费者</td><td>并发编程</td><td>5</td></tr>
+        <tr><td>20</td><td>IP 地址与整数互转</td><td>字符串与库函数</td><td>4</td></tr>
+        <tr><td>21</td><td>LRU Cache</td><td>C++ 类与设计模式</td><td>4</td></tr>
+        <tr><td>22</td><td>SWAP 宏（不用临时变量）</td><td>C 语言基础</td><td>4</td></tr>
+        <tr><td>23</td><td>TopK（堆 / 快排思想）</td><td>排序与查找</td><td>4</td></tr>
+        <tr><td>24</td><td>offsetof / container_of 宏</td><td>C 语言基础</td><td>4</td></tr>
+        <tr><td>25</td><td>socket TCP server / echo / 通信流程</td><td>嵌入式与系统编程特色</td><td>4</td></tr>
+        <tr><td>26</td><td>全排列（字符串 / 数组）</td><td>字符串与库函数</td><td>4</td></tr>
+        <tr><td>27</td><td>单链表排序</td><td>链表操作</td><td>4</td></tr>
+        <tr><td>28</td><td>大数运算（加减 / 乘法）</td><td>字符串与库函数</td><td>4</td></tr>
+        <tr><td>29</td><td>平方根（不用库 / 精度）</td><td>数学与逻辑题</td><td>4</td></tr>
+        <tr><td>30</td><td>找环的入口节点</td><td>链表操作</td><td>4</td></tr>
+      </tbody>
+    </table>
+    <p class="table-note">注：样本内重复出现的同一题目只计一次；完整 51 项题目清单见配套频次统计文件。</p>
+
+    <h3 id="section-3-3">（三）题型分布的结构性特征</h3>
+    <p>第一梯队（出现于 35% 以上样本）只有两类：链表操作与字符串 / 库函数手写，且两者高度同源——链表题考指针操作与边界，库函数题考内存模型与边界。第二梯队（20%—26%）为数组矩阵、嵌入式特色题、位运算、排序、C++ 类、C 语言基础，构成"广度扫盲"层。第三梯队（10%—17%）为动态规划、二叉树、数学题、并发、代码改错，属于区分度层。栈与队列、图与几何占比最低，说明纯算法竞赛型题目在嵌入式岗位面经中密度很低。</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================= 四、高频考点考法解析 ================= -->
+  <div class="chapter">
+    <h2 id="section-4">四、高频考点考法解析</h2>
+    <p>以下对 Top 10 考点给出典型原题、考察意图与常见丢分点。</p>
+
+    <p><strong>单链表反转（26 次，绝对第一）。</strong>典型原题："手撕：反转单链表，要求递归和非递归都写"（小鹏、蔚来、腾讯等多家）。考察意图：指针操作基本功、空链表与单节点边界、递归深度意识。丢分点：头结点更新丢失、递归写法对长链表可能栈溢出（嵌入式场景下面试官可能因此更推荐迭代写法）。</p>
+    <p><strong>链表判环与找入口（15 + 4 次）。</strong>典型原题："判断链表有环，并找入环节点"（小米、大疆、滴滴）。考察意图：快慢指针、Floyd 算法变体。丢分点：只会判断有环不会找入口；说不清快慢指针的相遇数学原理。</p>
+    <p><strong>环形缓冲区 / 循环队列（11 次，嵌入式特色题首位）。</strong>典型原题："写一个固定大小的环形缓冲区，不允许动态申请内存，要支持写入、读取，还要能判断空和满"（华为终端 BG）；"实现一个环行 BUFFER，包含初始化，读，写函数"（多家题库）。考察意图：嵌入式内存受限思维、读写指针回绕、空 / 满判定（牺牲一个槽位或维护计数）、中断与多线程下的并发安全（volatile、原子操作、单生产单消费者是否加锁）。丢分点：取模写法正确但不解释空满二义性；不谈并发安全。</p>
+    <p><strong>strcpy 手写（10 次）。</strong>典型原题："不用 C/C++ 字符串库函数，编写函数 strcpy()"（大华笔试）；"strcpy 的返回值是什么？如果让你实现 strcpy(char *src, char *dest, size_t t)，如何实现"。考察意图：字符串结尾处理、返回值语义、参数顺序与 const 正确性。丢分点：忘记返回目标指针；不检查内存重叠（strcpy 本身不保证重叠安全，面试官常追问与 memmove 的对比）。</p>
+    <p><strong>memcpy / memmove 手写（9 次）。</strong>典型原题："用 C 实现自己的 memcpy() 函数？写出来后让再换一种高级写法"（CVTE）；"一道改错题：memcpy()、数组变量作返回值"（乐鑫）。考察意图：内存重叠判断（目标在源之后且区间相交时须反向拷贝）、按字优化、void 指针算术。丢分点：只写正序拷贝不讲重叠；不知道 memmove 与 memcpy 的区别正是重叠安全。</p>
+    <p><strong>冒泡与快速排序（9 + 8 次）。</strong>典型原题："在纸上写下快排，再讲下快排思路"（联发科）；"写一个快排。能否用非递归方式实现；什么时候复杂度最大"（腾讯企业微信）。考察意图：排序手写是基础验收，快排还考分区逻辑、稳定性认知、最坏复杂度与避免手段。丢分点：快排分区写错；答不出快排不稳定的原因。</p>
+    <p><strong>合并两个有序链表 / 数组（9 次）。</strong>典型原题："手撕：合并两个有序链表（手撕完继续八股拷打）"（海康实习）；"合并两个排序数组并去重"（字节）。考察意图：双指针协同、虚拟头结点技巧、从后往前填充的变体。丢分点：边界处理（其中一条先走完）；不会 O(1) 辅助空间的写法。</p>
+    <p><strong>大小端判断 / 字节序转换（9 次）。</strong>典型原题："大端小端是啥？让我当场写段代码判断机器是大端还是小端"（地平线）；"写一个函数判断大小端，或者写一段代码把一个 32 位整数的字节顺序反转"（多份题库）。考察意图：联合体法、指针强转法、网络字节序转换的工程动机（多传感器数据总线上传）。丢分点：只会一种写法；说不清为什么通信协议要约定字节序。</p>
+    <p><strong>链表插入 / 删除（8 次）。</strong>典型原题："会什么数据结构（二叉树、链表、队列、栈），手写链表的插入，中间插入"（海康）；"实现单链表的插入和删除"（华为 C++ 岗）；"双链表节点插入：插在指定节点前面 / 后面"（联发科）。考察意图：双链表 prev / next 双向维护、O(1) 删除的拷贝值技巧。丢分点：双链表插入漏掉一侧指针；不知道"删除节点可用后结点值前移"的 O(1) 变体。</p>
+    <p><strong>MAX / MIN / SWAP 宏（7 + 4 次）。</strong>典型原题："手写一个宏求两数最大值。考虑过宏的副作用吗？"（小鹏）；"写一个宏定义 swap(x,y) 交换两个变量的值，不使用第三个变量"（多家）；"MIN(a++, b) 这种用法有什么问题吗"。考察意图：宏参数括号完整性、副作用、异或交换的局限（同一变量会归零）。丢分点：宏体不加括号；不知道 a++ 传参会被多次求值。</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ================= 五、结论与备考建议 ================= -->
+  <div class="chapter">
+    <h2 id="section-5">五、结论与备考建议</h2>
+    <p>本章汇总五条核心结论，给出 P0 / P1 / P2 分级练习清单、四步验收标准，并与项目既有手撕训练序列做对照校准。</p>
+
+    <h3 id="section-5-1">（一）核心结论</h3>
+    <ol class="conclusion-list">
+      <li><strong>结论一：手撕代码是嵌入式 / Linux 应用岗面试的常规环节。</strong>出现率 86.6%，一面标配，部分二面、三面与笔试同样存在，必须以"必考项"而非"加分项"投入准备。</li>
+      <li><strong>结论二：考点结构呈"两超多强"格局。</strong>链表（43.1%）与字符串 / 库函数手写（38.8%）为超级大类；数组、嵌入式特色题、位运算、排序、C++ 类、C 语言基础六个大类各占两成上下，构成一面广度扫盲的主体。二者共同指向同一能力内核：C 语言层面的指针与内存掌控。</li>
+      <li><strong>结论三：嵌入式岗位有区别于通用软开的"签名题型"。</strong>环形缓冲区、滑动平均滤波、状态机、Makefile、socket 通信流程、协议解析等嵌入式特色手撕占 23.3%，其中环形缓冲区（11 次）与滑动窗口滤波（大疆三连问）最具岗位辨识度，且追问全部落在"不用动态内存、并发安全、大窗口优化"等工程约束上。</li>
+      <li><strong>结论四：难度预期以"基础档一遍过"为主。</strong>Top 30 题目绝大多数不超出链表、字符串、排序、位运算、宏的基础组合；动态规划与 LeetCode 中等题占 16.4%，是冲击消费电子与互联网对口岗时的区分度来源，但并非嵌入式主战场的门槛。</li>
+      <li><strong>结论五：存在明显的公司分层。</strong>终端与消费电子类（华为、大疆、小米、vivo、海康）手撕密度最高且题型最全；SoC 原厂与部分家电车企（比亚迪、展锐、瑞芯微、兆易、美的、格力等）样本中过半无手撕，以八股与项目深挖为主。投递结构决定了练习深度：主战安防与终端厂，基础档必须熟练到条件反射；若兼投互联网对口岗，需追加进阶档题库。</li>
+    </ol>
+
+    <h3 id="section-5-2">（二）分级练习清单</h3>
+    <p><strong>P0（必须条件反射级，12 项）：</strong>单链表反转（迭代 + 递归）、链表判环与找入口、strcpy 安全版、memcpy / memmove（含重叠）、合并两个有序链表 / 数组、大小端判断（两种写法）、环形缓冲区（含空满判定与中断并发追问）、冒泡与快速排序、MAX / MIN 宏与 swap 宏（含副作用）、置位 / 清零 / 翻转某位、二进制中 1 的个数（两种写法）、定长滑动平均滤波（不用动态内存）。</p>
+    <p><strong>P1（应会，讲清思路并能写主体，10 项）：</strong>两个栈实现队列、层序遍历、LCA、生产者消费者、线程安全单例、IP 地址与整数互转、TopK、平方根（不用库函数）、LRU Cache、socket TCP 通信流程（函数序列）。</p>
+    <p><strong>P2（冲刺档，按投递目标选修，6 项）：</strong>动态规划基础族（最大子数组和、爬楼梯、01 背包变形）、字符串进阶（最长无重复子串、最小覆盖子串、大数运算）、String / vector / 智能指针仿写、JSON 解析、无锁环形缓冲区（SPSC）、二叉树序列化。</p>
+
+    <h3 id="section-5-3">（三）练习方法与验收标准</h3>
+    <p>每题按四步验收：其一，白纸或纯文本编辑器一遍写对，不依赖 IDE 补全；其二，主动口述时间与空间复杂度，不等面试官问；其三，主动处理边界（空链表、单节点、内存重叠、整数溢出、并发访问）；其四，准备一个变体追问的应答（如"窗口很大怎么优化""中断里写任务里读怎么保证安全""不能用临时变量怎么交换"）。样本反馈显示，面试官对"写对但讲不清边界"的候选人给分明显低于"写法普通但边界完整"的候选人。</p>
+
+    <h3 id="section-5-4">（四）与既有备考计划的对照</h3>
+    <p class="callout-p">&nbsp;&nbsp;项目既有手撕训练序列（strcpy 安全版 → memmove 重叠 → 链表反转 → 大小端，外加判环、循环队列、位操作、TopK）全部落在本报告的高频区内，方向正确。基于本轮数据建议两处调整：将"环形缓冲区"与"置位 / 清零"从应会提升为必会（华为、大疆、科大讯飞均有实测原题）；若投递大疆飞控类岗位，追加"定长滑动平均滤波"一题（该题在三份独立样本中重复出现，且追问链完整，属岗位强信号题）。</p>
+  </div>
+
+  <hr class="divider">
+
+  </main>
+
+  <!-- ================= 附录 ================= -->
+  <div class="appendix">
+    <h2 id="section-6">附录</h2>
+    <p>本附录列出来源平台分布、去重与剔除记录、数据文件索引，供复核与追溯。</p>
+
+    <h3 id="section-6-1">附录 A：来源平台分布</h3>
+    <p>牛客网 66 份、CSDN 及旗下开发者社区 40 份、博客园 4 份、帅地玩编程 4 份、个人博客 4 份、尧图网络 3 份、掘金 2 份，另有 CSDN 转载、腾讯云社区、WonderCV、电子工程专辑、嵌云网、搜狐号、PSWP、火山引擎、腾讯云、编程知识、Gitee PDF 各 1 份。</p>
+
+    <h3 id="section-6-2">附录 B：去重与剔除记录</h3>
+    <p>同一 URL 跨批次重复合并 8 组（华为、小鹏、春招汇总、蔚来汇总、海康汇总、联发科实习、CVTE 面经、大疆三面各 1 组）；URL 已存在于既有样本库而剔除 15 条记录（小米汽车、蔚来、理想、海康、视频编解码类岗位、大华、中兴领军、旷视、恒玄、涂鸦、星宸、黑芝麻、蔚来一面、TP-Link 联洲等）。个别汇总帖转述了其他在库样本的内容（如海康 5.23 实习一面同时以原帖与汇总帖两种形态存在），两帖均保留并已在样本库备注中标注，阅读频次时应注意此同源可能。</p>
+
+    <h3 id="section-6-3">附录 C：数据文件索引</h3>
+    <p>《手撕面经样本库_2026-10-15.md》：134 份样本的公司、岗位、来源 URL、手撕形式与题目清单；《手撕考题频次统计_2026-10-15.md》：大类频次、题目频次全量清单、无手撕样本清单与去重记录。两份文件位于项目 .claude/learning/面试备战/面经与校准/ 目录。</p>
+  </div>
+
+</section>
+
+</body>
+</html>
