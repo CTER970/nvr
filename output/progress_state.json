@@ -1,0 +1,34 @@
+{
+  "title": "链表日 · 收官（10-22）",
+  "sub": "F1 族 8 张主力全推进 · S-08 明日闭卷",
+  "done": 6,
+  "total": 7,
+  "groups": [
+    {
+      "name": "上午场 · 全部代码关过",
+      "tasks": [
+        { "mark": "✓", "mt": "done", "label": "S-01 反转链表", "note": "欠·递归口述", "nt": "debt" },
+        { "mark": "✓", "mt": "done", "label": "S-02 判环+找入口", "note": "欠·a=c 推导", "nt": "debt" },
+        { "mark": "✓", "mt": "done", "label": "S-03 合并有序链表", "note": "全过·欠复杂度模板", "nt": "debt" },
+        { "mark": "✓", "mt": "done", "label": "S-04 设计链表", "note": "欠·口试三件", "nt": "debt" }
+      ]
+    },
+    {
+      "name": "下午场 · 全部销卡",
+      "tasks": [
+        { "mark": "✓", "mt": "done", "label": "S-05 中间结点 LC876", "note": "销卡", "nt": "done" },
+        { "mark": "✓", "mt": "done", "label": "S-06 相交链表 LC160", "note": "销卡", "nt": "done" }
+      ]
+    },
+    {
+      "name": "明日",
+      "tasks": [
+        { "mark": "▶", "mt": "doing", "label": "S-08 排序链表 LC148", "note": "口述 3→1→2 + 闭卷写码", "nt": "doing" }
+      ]
+    }
+  ],
+  "footers": [
+    "挂账 5 笔（明日打包清）：LC88 变式 / S-01 递归 / S-02 a=c / S-04 三件 / S-03 模板",
+    "族总结：dummy 哨兵 · 前驱定位 · 快慢指针 · 顺序纪律 —— 明日 S-08 收尾后接 S-10 strcpy"
+  ]
+}

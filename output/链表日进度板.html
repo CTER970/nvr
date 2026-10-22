@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>链表收卡日 · 10-22</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; background: #F1EFE8; color: #2C2C2A; margin: 0; padding: 16px; font-size: 14px; }
+  h1 { font-size: 16px; font-weight: 600; margin: 0 0 2px; }
+  .sub { color: #5F5E5A; font-size: 12px; margin-bottom: 12px; }
+  .progress { background: #fff; border: 1px solid #D3D1C7; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; }
+  .pct { font-size: 20px; font-weight: 600; color: #0F6E56; }
+  .track { height: 8px; background: #E5E3DA; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .fill { height: 100%; background: #0F6E56; width: 44%; border-radius: 4px; transition: width .4s; }
+  .grp { background: #fff; border: 1px solid #D3D1C7; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; }
+  .grp h2 { font-size: 13px; font-weight: 600; margin: 0 0 6px; color: #3C3489; }
+  .task { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid #F1EFE8; }
+  .task:last-child { border-bottom: none; }
+  .st { font-size: 11px; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .done { background: #E1F5EE; color: #0F6E56; }
+  .doing { background: #FAEEDA; color: #854F0B; }
+  .todo { background: #F1EFE8; color: #888780; }
+  .debt { background: #FAECE7; color: #993C1D; }
+  .name { flex: 1; }
+</style>
+</head>
+<body>
+  <h1>链表收卡日 · 10-22</h1>
+  <div class="sub">目标：F1 族 8 张卡全闭卷，链表收官</div>
+
+  <div class="progress">
+    <span class="pct">5 / 9</span> <span style="color:#5F5E5A;font-size:12px">关卡完成</span>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <div class="grp">
+    <h2>上午场 · 已收官</h2>
+    <div class="task"><span class="st done">✓ 销卡</span><span class="name">S-01 反转链表（LC206 过）</span><span class="st debt">递归口述欠</span></div>
+    <div class="task"><span class="st done">✓ 代码过</span><span class="name">S-02 判环+找入口（141/142 过）</span><span class="st debt">a=c 推导欠</span></div>
+    <div class="task"><span class="st done">✓ 代码过</span><span class="name">S-04 设计链表（707 过）</span><span class="st debt">口试三件欠</span></div>
+    <div class="task"><span class="st done">✓ 销卡</span><span class="name">S-03 合并有序链表（代码+概念+LC 全过）</span><span class="st debt">复杂度口述欠</span></div>
+  </div>
+
+  <div class="grp">
+    <h2>下午场 · 进行中</h2>
+    <div class="task"><span class="st done">✓ 销卡</span><span class="name">S-05 中间结点（LC876 过）</span></div>
+    <div class="task"><span class="st doing">明天闭卷</span><span class="name">S-08 排序链表（递归已懂，明天口述+写码+LC148）</span></div>
+    <div class="task"><span class="st doing">闭卷待写</span><span class="name">S-06 相交链表（今日最后一张，≤10min）</span></div>
+  </div>
+
+  <div class="grp">
+    <h2>挂账口述（5 分钟打包清）</h2>
+    <div class="task"><span class="st debt">欠</span><span class="name">LC88 变式：数组版为何从后往前</span></div>
+    <div class="task"><span class="st debt">欠</span><span class="name">S-01 递归版两句 / S-02 推 a=c / S-04 小检验+全志变式 / S-03 复杂度模板</span></div>
+  </div>
+
+  <div class="grp">
+    <h2>晚上 · 低强度</h2>
+    <div class="task"><span class="st todo">待开</span><span class="name">族级总结：dummy 三用途 / 前驱定位 / 快慢针 / 顺序纪律</span></div>
+    <div class="task"><span class="st todo">待开</span><span class="name">明日预告：四件套之 S-10 手写 strcpy</span></div>
+  </div>
+
+  <script>document.getElementById("fill").style.width = "56%";</script>
+</body>
+</html>

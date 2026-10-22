@@ -5,6 +5,9 @@ EdgeFusion_Smart_NVR-main.zip
 __pycache__/
 *.pyc
 
+# 运行时日志
+*.log
+
 # ZCode 会话临时目录
 .zcode/
 inner_git_backup_0830/
