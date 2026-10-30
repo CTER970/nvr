@@ -1,0 +1,127 @@
+{
+  "manifest_version": "v1",
+  "format": "ndjson",
+  "base_token": "YcvHbAdHYaosQtsSzo6cAcSjnKk",
+  "table_id": "tblf896EpPOBNcTf",
+  "rev": 275,
+  "timezone": "Asia/Shanghai",
+  "query_context": {
+    "field_scope": "view_visible_fields",
+    "record_scope": "view_filtered_records"
+  },
+  "requested_limit": 200,
+  "records_count": 58,
+  "page_count": 1,
+  "has_more": false,
+  "record_file": "C:\\Users\\Windows\\Desktop\\EdgeFusion_Smart_NVR\\output\\toudi_records.ndjson",
+  "record_file_size_bytes": 20112,
+  "manifest_file": "C:\\Users\\Windows\\Desktop\\EdgeFusion_Smart_NVR\\output\\toudi_records.manifest.json",
+  "columns": {
+    "record_id": {
+      "physical_type": "string",
+      "stats": {
+        "max_length": 16
+      },
+      "example": "recvw8NHYFk5Ap"
+    },
+    "公司名称": {
+      "field_id": "fldVhmq1wY",
+      "field_type": "text",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 20,
+        "max_length": 13
+      },
+      "example": "360"
+    },
+    "城市": {
+      "field_id": "fldxdDPjrW",
+      "field_type": "select",
+      "physical_type": "array<string>",
+      "stats": {
+        "empty_count": 26,
+        "max_length": 1,
+        "avg_length": 0.5517241379310345
+      },
+      "example": [
+        "深圳"
+      ]
+    },
+    "备注": {
+      "field_id": "fldNPT5EPw",
+      "field_type": "text",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 58,
+        "max_length": 0
+      },
+      "hint": "All values are empty; type inference may be ambiguous. Avoid analyzing this column unless required."
+    },
+    "岗位名称": {
+      "field_id": "fldgjBW962",
+      "field_type": "text",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 54,
+        "max_length": 15
+      },
+      "example": "嵌入式软件工程师"
+    },
+    "投递日期": {
+      "field_id": "fldsdLeFhT",
+      "field_type": "datetime",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 25,
+        "min": "2026-09-24T00:00:00.000+08:00",
+        "max": "2026-09-29T00:00:00.000+08:00"
+      },
+      "example": "2026-09-24T00:00:00.000+08:00"
+    },
+    "投递渠道": {
+      "field_id": "fldH5iIR50",
+      "field_type": "select",
+      "physical_type": "array<string>",
+      "stats": {
+        "empty_count": 25,
+        "max_length": 1,
+        "avg_length": 0.5689655172413793
+      },
+      "example": [
+        "官网校招"
+      ]
+    },
+    "投递状态": {
+      "field_id": "fldyCVbv6a",
+      "field_type": "select",
+      "physical_type": "array<string>",
+      "stats": {
+        "empty_count": 25,
+        "max_length": 1,
+        "avg_length": 0.5689655172413793
+      },
+      "example": [
+        "测评"
+      ]
+    },
+    "投递链接": {
+      "field_id": "fldHFa2HLC",
+      "field_type": "text",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 26,
+        "max_length": 416
+      },
+      "example": "[校招职位](https://grand2012.zhiye.com/campus/jobs)"
+    },
+    "最近笔面试时间": {
+      "field_id": "fldA6oVDiu",
+      "field_type": "datetime",
+      "physical_type": "string|null",
+      "stats": {
+        "null_count": 58
+      },
+      "hint": "All values are empty; type inference may be ambiguous. Avoid analyzing this column unless required."
+    }
+  }
+}
